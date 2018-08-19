@@ -1,0 +1,4 @@
+#Sun Aug 19 06:43:35 JST 2018
+base.0=/Users/fumito/Desktop/instakePhoto/ricoh-theta-sample-for-androidv2_1/app/build/intermediates/transforms/dexMerger/debug/2
+path.0=classes.dex
+renamed.0=classes.dex

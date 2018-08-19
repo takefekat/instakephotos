@@ -1,0 +1,172 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:2:1-44:12
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:2:1-44:12
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:2:1-44:12
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:2:1-44:12
+MERGED from [com.android.support:appcompat-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/805faedd7b2790471db0fb0a0ac539e2/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support.constraint:constraint-layout:1.1.2] /Users/fumito/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.2.aar/0d4df5e49735f87a380ac0383330692e/AndroidManifest.xml:2:1-11:12
+MERGED from [com.android.support:gridlayout-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/gridlayout-v7-24.2.1.aar/ebc14ab6212a25014d97780d70c8c245/AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:support-v4:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-v4-24.2.1.aar/55a5a48b1033adcb3f5f500ce260d2dd/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:animated-vector-drawable:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-24.2.1.aar/612e3753f170ae64a9cd2ce34f042f2f/AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:support-vector-drawable:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-24.2.1.aar/d69beef3a6c33250e3f4921536ea99c3/AndroidManifest.xml:17:1-25:12
+MERGED from [com.android.support:support-fragment:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-fragment-24.2.1.aar/66df9f62baaf8c2bcf83fa6ac6460530/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-core-ui:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-core-ui-24.2.1.aar/7ae2a4017afdbb7811c5065124d2bd14/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-media-compat:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-media-compat-24.2.1.aar/8b45b0782c5adce41b0be31267c5f0e8/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-core-utils:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-core-utils-24.2.1.aar/8b8101176ca0492a1753d635c483f08b/AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-compat:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-compat-24.2.1.aar/9045effdf7a5566cb65cc33d4641da50/AndroidManifest.xml:17:1-27:12
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:2:1-44:12
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:2:1-44:12
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:2:1-44:12
+	package
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:3:5-37
+		INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:2:1-44:12
+		INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+	android:versionCode
+		INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:2:1-44:12
+		INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:5:5-67
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:5:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:6:5-79
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:6:22-76
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:7:5-81
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:7:22-78
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:8:5-80
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:8:22-77
+uses-feature#0x00020000
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:10:5-12:35
+	android:glEsVersion
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:11:9-41
+	android:required
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:12:9-32
+application
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:14:5-42:19
+MERGED from [com.android.support:appcompat-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/805faedd7b2790471db0fb0a0ac539e2/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:appcompat-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/805faedd7b2790471db0fb0a0ac539e2/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.1.2] /Users/fumito/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.2.aar/0d4df5e49735f87a380ac0383330692e/AndroidManifest.xml:9:5-20
+MERGED from [com.android.support.constraint:constraint-layout:1.1.2] /Users/fumito/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.2.aar/0d4df5e49735f87a380ac0383330692e/AndroidManifest.xml:9:5-20
+MERGED from [com.android.support:gridlayout-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/gridlayout-v7-24.2.1.aar/ebc14ab6212a25014d97780d70c8c245/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:gridlayout-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/gridlayout-v7-24.2.1.aar/ebc14ab6212a25014d97780d70c8c245/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-v4:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-v4-24.2.1.aar/55a5a48b1033adcb3f5f500ce260d2dd/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-v4:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-v4-24.2.1.aar/55a5a48b1033adcb3f5f500ce260d2dd/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:animated-vector-drawable:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-24.2.1.aar/612e3753f170ae64a9cd2ce34f042f2f/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:animated-vector-drawable:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-24.2.1.aar/612e3753f170ae64a9cd2ce34f042f2f/AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-vector-drawable:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-24.2.1.aar/d69beef3a6c33250e3f4921536ea99c3/AndroidManifest.xml:23:5-20
+MERGED from [com.android.support:support-vector-drawable:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-24.2.1.aar/d69beef3a6c33250e3f4921536ea99c3/AndroidManifest.xml:23:5-20
+MERGED from [com.android.support:support-fragment:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-fragment-24.2.1.aar/66df9f62baaf8c2bcf83fa6ac6460530/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-fragment:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-fragment-24.2.1.aar/66df9f62baaf8c2bcf83fa6ac6460530/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-ui:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-core-ui-24.2.1.aar/7ae2a4017afdbb7811c5065124d2bd14/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-ui:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-core-ui-24.2.1.aar/7ae2a4017afdbb7811c5065124d2bd14/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-media-compat:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-media-compat-24.2.1.aar/8b45b0782c5adce41b0be31267c5f0e8/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-media-compat:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-media-compat-24.2.1.aar/8b45b0782c5adce41b0be31267c5f0e8/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-utils:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-core-utils-24.2.1.aar/8b8101176ca0492a1753d635c483f08b/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-utils:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-core-utils-24.2.1.aar/8b8101176ca0492a1753d635c483f08b/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-compat:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-compat-24.2.1.aar/9045effdf7a5566cb65cc33d4641da50/AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-compat:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-compat-24.2.1.aar/9045effdf7a5566cb65cc33d4641da50/AndroidManifest.xml:25:5-20
+	android:supportsRtl
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:18:9-35
+	android:label
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:17:9-41
+	android:icon
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:16:9-45
+	android:allowBackup
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:15:9-35
+	android:theme
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:19:9-56
+activity#com.theta360.sample.v2.ImageListActivity
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:20:9-29:20
+	android:screenOrientation
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:23:13-52
+	android:label
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:22:13-45
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:21:13-46
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:24:13-28:29
+action#android.intent.action.MAIN
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:25:17-69
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:25:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:27:17-77
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:27:27-74
+activity#com.theta360.sample.v2.GLPhotoActivity
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:30:9-32:55
+	android:screenOrientation
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:32:13-52
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:31:13-44
+activity#com.theta360.sample.v2.ImageList2D_Activity
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:33:9-35:55
+	android:screenOrientation
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:35:13-52
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:34:13-49
+activity#com.theta360.sample.v2.Image2D_Activity
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:36:9-40:54
+	android:label
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:39:13-60
+	android:configChanges
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:38:13-74
+	android:theme
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:40:13-51
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:37:13-45
+activity#com.theta360.sample.v2.TakePhotoActivity
+ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:41:9-64
+	android:name
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml:41:19-52
+uses-sdk
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+MERGED from [com.android.support:appcompat-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/805faedd7b2790471db0fb0a0ac539e2/AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:appcompat-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/805faedd7b2790471db0fb0a0ac539e2/AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support.constraint:constraint-layout:1.1.2] /Users/fumito/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.2.aar/0d4df5e49735f87a380ac0383330692e/AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support.constraint:constraint-layout:1.1.2] /Users/fumito/.gradle/caches/transforms-1/files-1.1/constraint-layout-1.1.2.aar/0d4df5e49735f87a380ac0383330692e/AndroidManifest.xml:5:5-7:41
+MERGED from [com.android.support:gridlayout-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/gridlayout-v7-24.2.1.aar/ebc14ab6212a25014d97780d70c8c245/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:gridlayout-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/gridlayout-v7-24.2.1.aar/ebc14ab6212a25014d97780d70c8c245/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-v4:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-v4-24.2.1.aar/55a5a48b1033adcb3f5f500ce260d2dd/AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-v4:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-v4-24.2.1.aar/55a5a48b1033adcb3f5f500ce260d2dd/AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:animated-vector-drawable:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-24.2.1.aar/612e3753f170ae64a9cd2ce34f042f2f/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/animated-vector-drawable-24.2.1.aar/612e3753f170ae64a9cd2ce34f042f2f/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-24.2.1.aar/d69beef3a6c33250e3f4921536ea99c3/AndroidManifest.xml:21:5-43
+MERGED from [com.android.support:support-vector-drawable:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-vector-drawable-24.2.1.aar/d69beef3a6c33250e3f4921536ea99c3/AndroidManifest.xml:21:5-43
+MERGED from [com.android.support:support-fragment:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-fragment-24.2.1.aar/66df9f62baaf8c2bcf83fa6ac6460530/AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-fragment:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-fragment-24.2.1.aar/66df9f62baaf8c2bcf83fa6ac6460530/AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-core-ui:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-core-ui-24.2.1.aar/7ae2a4017afdbb7811c5065124d2bd14/AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-ui:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-core-ui-24.2.1.aar/7ae2a4017afdbb7811c5065124d2bd14/AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-media-compat:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-media-compat-24.2.1.aar/8b45b0782c5adce41b0be31267c5f0e8/AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-media-compat:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-media-compat-24.2.1.aar/8b45b0782c5adce41b0be31267c5f0e8/AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-core-utils:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-core-utils-24.2.1.aar/8b8101176ca0492a1753d635c483f08b/AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-core-utils:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-core-utils-24.2.1.aar/8b8101176ca0492a1753d635c483f08b/AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-compat:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-compat-24.2.1.aar/9045effdf7a5566cb65cc33d4641da50/AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/support-compat-24.2.1.aar/9045effdf7a5566cb65cc33d4641da50/AndroidManifest.xml:21:5-23:58
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+	tools:overrideLibrary
+		ADDED from [com.android.support:appcompat-v7:24.2.1] /Users/fumito/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/805faedd7b2790471db0fb0a0ac539e2/AndroidManifest.xml:23:9-75
+	android:targetSdkVersion
+		INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+		ADDED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/src/main/AndroidManifest.xml
