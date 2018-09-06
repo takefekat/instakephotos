@@ -600,7 +600,12 @@ public class TakePhotoActivity extends Activity {
 
             // 2D画像切り取り
             CuttingImage  cutter = new CuttingImage();
-            Bitmap image2d_bitmap = cutter.cut(image360_bitmap,0.8,0.8,0,0);
+            //Bitmap image2d_bitmap = cutter.cut(image360_bitmap,0.8,0.8,0,0);
+            Bitmap [] image2d_bitmap_a =new Bitmap[50];
+            image2d_bitmap_a = cutter.cut(image360_bitmap,1.0,1.0,2 * Math.PI / 10,Math.PI /2/4);
+            Bitmap image2d_bitmap = image2d_bitmap_a[25];
+
+
             Log.d("debug","Complete cut image");
 
             // 2D画像保存先フォルダ
