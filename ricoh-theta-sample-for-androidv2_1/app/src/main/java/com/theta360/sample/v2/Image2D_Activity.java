@@ -101,7 +101,7 @@ public class Image2D_Activity extends Activity {
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = (ImageView) findViewById(R.id.image_view);
+        mContentView = (ImageView) findViewById(R.id.imageView);
 
         Log.d("debug","*** Start Image2D Activity ***");
 
@@ -112,8 +112,9 @@ public class Image2D_Activity extends Activity {
         byte[] byteArray = convertFile(file);
         Log.d("debug","setImageBitmap");
         Bitmap bmp =  BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        Log.d("debug","Bit map #Byte :" + Integer.toString(bmp.getByteCount()));
         mContentView.setImageBitmap(bmp);
-        Log.d("debug","setImageBitmap");
+        Log.d("debug","setImageBitmap Complete");
 
 
         // Set up the user interaction to manually show or hide the system UI.
