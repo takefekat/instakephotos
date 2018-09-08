@@ -16,9 +16,6 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.theta360.sample.v2.network.HttpConnector;
-import com.theta360.sample.v2.network.HttpEventListener;
-import com.theta360.sample.v2.view.ImageListArrayAdapter;
 import com.theta360.sample.v2.view.ImageRow;
 
 import java.io.ByteArrayOutputStream;
