@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class ImageList2D_Activity extends Activity {
 
     // 表示する画像の名前（拡張子無し）
-    private String[] members = new String[1];
+    private String[] members = new String[10];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,18 +33,17 @@ public class ImageList2D_Activity extends Activity {
         Intent intent = getIntent();
         final String fileId = intent.getStringExtra("OBJECT_ID");
 
-        Log.d("debug",fileId);
+        //Log.d("debug","2D画像保存先　：　" + fileId);
 
         String storagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/image2d/" + getfilename(fileId);
         storagePath = storagePath.substring(0,storagePath.length()-4);
-        Log.d("debug","storagePath = "+storagePath);
+        Log.d("debug","2D画像保存先 = "+storagePath);
 
         final File[] _files = new File(storagePath).listFiles();
         ArrayList<File> files = new ArrayList<File>();
 
-        Log.d("debug","2D image数"+Integer.toString(_files.length));
+        Log.d("debug","2D image数 = "+Integer.toString(_files.length));
         for (int i=0; i<_files.length; i++) {
-            Log.d("debug",_files[i].getName());
             if(_files[i].isFile()) {
                 files.add(_files[i]);
                 members[i] = _files[i].getName();
@@ -55,7 +54,7 @@ public class ImageList2D_Activity extends Activity {
         // GridViewのインスタンスを生成
         GridView gridview = (GridView) findViewById(R.id.gridview);
 
-        //グリッド4列表示
+        //グリッド2列表示
         gridview.setNumColumns(2);
         //表示する画像を取得
         ArrayList<Bitmap> lstBitmap = new ArrayList<Bitmap>();
@@ -65,11 +64,12 @@ public class ImageList2D_Activity extends Activity {
             lstBitmap.add(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
         }
 
+        Log.d("debug","lstBitmap size = " + lstBitmap.size());
         //アダプター作成
         BitmapAdapter adapter = new BitmapAdapter(getApplicationContext(), lstBitmap);
+
         //グリッドにアダプタを設定
         gridview.setAdapter(adapter);
-
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

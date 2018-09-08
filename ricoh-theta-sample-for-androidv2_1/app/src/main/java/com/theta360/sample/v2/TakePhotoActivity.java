@@ -459,7 +459,11 @@ public class TakePhotoActivity extends Activity {
             //}
         }
     }
-
+    /********************
+     Input : fileid
+     Task : 360°画像、サムネイル、(pitch, roll, yaw)をファイル保存
+     instakePhotos Task起動
+    ********************/
     private class StoreFileTask extends AsyncTask<String, Object, Void> {
 
         protected Void doInBackground(String ... fileId){
@@ -559,6 +563,7 @@ public class TakePhotoActivity extends Activity {
                 //ファイルを閉じる
                 pw.close();
                 Log.d("debug","pitch, roll, yaw:出力完了" + info_fname);
+                Log.d( "debug","(pitch,roll,yaw) = (" + pitch_s + ", " + roll_s + ", " + yaw_s );
             } catch (IOException e) {
                 Log.d("debug","pitch, roll, yaw出力不可");
                 e.printStackTrace();
@@ -598,13 +603,21 @@ public class TakePhotoActivity extends Activity {
             Bitmap image360_bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             Log.d("debug","Complete Load file");
 
+
             // 2D画像切り取り
             CuttingImage  cutter = new CuttingImage();
             //Bitmap image2d_bitmap = cutter.cut(image360_bitmap,0.8,0.8,0,0);
             Bitmap [] image2d_bitmap_a =new Bitmap[50];
             image2d_bitmap_a = cutter.cut(image360_bitmap,1.0,1.0,2 * Math.PI / 10,Math.PI /2/4);
-            Bitmap image2d_bitmap = image2d_bitmap_a[25];
+            Log.d("debug","Complete cut image");
 
+            ArrayList<Integer> output_photos = new ArrayList();
+            output_photos.add(0);
+            output_photos.add(5);
+            output_photos.add(10);
+            output_photos.add(15);
+            output_photos.add(20);
+            output_photos.add(24);
 
             Log.d("debug","Complete cut image");
 
@@ -625,20 +638,21 @@ public class TakePhotoActivity extends Activity {
                 return null;
             }
 
-            //360画像の保存
-            String image2d_fname = image2dDir.getAbsolutePath() + "/image2d_" + getfilename(fileId[0]);
-            File image2d_file = new File(image2d_fname);
-            try{
-                FileOutputStream outstream =new FileOutputStream(image2d_file);
-                image2d_bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outstream);
-                outstream.flush();//ファイルとして出力
-                outstream.close();//使ったらすぐに閉じる
-                Log.d("debug","2D画像保存完了:" + image2d_file);
-            }catch(IOException ie){
-                Log.d("debug","2D画像保存不可");
+            //2D画像の保存
+            for(int index : output_photos) {
+                String image2d_fname = image2dDir.getAbsolutePath() + "/image2d_" +Integer.toString(index)+ getfilename(fileId[0]);
+                File image2d_file = new File(image2d_fname);
+                try {
+                    FileOutputStream outstream = new FileOutputStream(image2d_file);
+                    image2d_bitmap_a[index].compress(Bitmap.CompressFormat.JPEG, 100, outstream);
+                    outstream.flush();//ファイルとして出力
+                    outstream.close();//使ったらすぐに閉じる
+                    Log.d("debug", "2D画像保存完了:" + image2d_file);
+                } catch (IOException ie) {
+                    Log.d("debug", "2D画像保存不可");
+                }
             }
-
-            Log.d("debug","*** END instakePhotos Task ***");
+            Log.d("debug", "*** END instakePhotos Task ***");
             return null;
         }
 

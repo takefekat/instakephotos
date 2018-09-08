@@ -56,11 +56,11 @@ public class ImageListArrayAdapter extends ArrayAdapter<ImageRow> {
 			thumbnail.setImageBitmap(null);
 		}
 
-		TextView title = (TextView) view.findViewById(R.id.list_item_title);
-		title.setText(row.getFileName());
+		//TextView title = (TextView) view.findViewById(R.id.list_item_title);
+		//title.setText(row.getFileName());
 
-		TextView description = (TextView) view.findViewById(R.id.list_item_description);
-		description.setText(row.getCaptureDate());
+		//TextView description = (TextView) view.findViewById(R.id.list_item_description);
+		//description.setText(row.getCaptureDate());
 
 		return view;
 	}

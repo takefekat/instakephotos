@@ -11,13 +11,13 @@
     <GridView
         android:id="@+id/gridview"
         android:layout_width="match_parent"
-        android:layout_height="485dp"
+        android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="#ffffff"
         android:gravity="center"
         android:horizontalSpacing="1dp"
-        android:numColumns="3"
+        android:numColumns="2"
         android:stretchMode="columnWidth"
         android:verticalSpacing="1dp" />
 

@@ -5,12 +5,12 @@ android:layout_height="match_parent"
 android:background="#ffffff"
 android:padding="3dp" >
 
-<ImageView
-    android:id="@+id/image_view"
-    android:layout_width="match_parent"
-    android:layout_height="140dp"
-    android:scaleType="centerCrop"
-    android:contentDescription="@string/description"/>
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:contentDescription="@string/description"
+        android:scaleType="centerCrop" />
 
 
 

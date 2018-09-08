@@ -198,8 +198,9 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
         public String getfilename(){
             Log.d("debug","start getfilename");
             Log.d("debug",fileId);
-            String[] list = fileId.split("/",0);
-            String fname = list[list.length-1];
+            //String[] list = fileId.split("/",0);
+            //String fname = list[list.length-1];
+            String fname = fileId.substring(fileId.length()-12);
             Log.d("debug",fname);
             return fname;
         }
