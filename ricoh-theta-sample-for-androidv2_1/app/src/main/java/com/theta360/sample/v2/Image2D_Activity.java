@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
@@ -102,6 +103,7 @@ public class Image2D_Activity extends Activity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = (ImageView) findViewById(R.id.imageView);
+        View dummy_button = findViewById(R.id.dummy_button);
 
         Log.d("debug","*** Start Image2D Activity ***");
 
@@ -129,7 +131,16 @@ public class Image2D_Activity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        dummy_button.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Log.d("debug", "Button was clicked.");
+            Intent intent = new Intent(getApplication(), ImageListActivity.class);
+            startActivity(intent);
+        }
+        });
     }
+
     public byte[] convertFile(File file) {
         try (FileInputStream inputStream = new FileInputStream(file);) {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -148,6 +159,7 @@ public class Image2D_Activity extends Activity {
         }
         return null;
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);

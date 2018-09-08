@@ -4,6 +4,8 @@ package com.theta360.sample.v2;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import static java.lang.Math.cos;
 
 

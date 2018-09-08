@@ -225,21 +225,6 @@ public class TakePhotoActivity extends Activity {
         return true;
     }
 
-    private void changeCameraStatus(final int resid) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                textCameraStatus.setText(resid);
-            }
-        });
-    }
-
-    private void appendLogView(final String log) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                //	logViewer.append(log);
-            }
-        });
-    }
 
     private class GetImageSizeTask extends AsyncTask<Void, String, ImageSize> {
 
@@ -341,7 +326,6 @@ public class TakePhotoActivity extends Activity {
             //}
         }
     }
-
 
     //  Shoot Buttonが押された時に実行される非同期処理
     private class ShootTask extends AsyncTask<Void, Void, HttpConnector.ShootResult> {
@@ -459,6 +443,7 @@ public class TakePhotoActivity extends Activity {
             //}
         }
     }
+
     /********************
      Input : fileid
      Task : 360°画像、サムネイル、(pitch, roll, yaw)をファイル保存
@@ -581,6 +566,15 @@ public class TakePhotoActivity extends Activity {
             String fname = list[list.length-1];
             return fname;
         }
+
+        public ArrayList<Long> getPitchRollYaw(String infofile) {
+
+            ArrayList<Long> PitchRollYaw = new ArrayList<Long>(3);
+
+
+
+            return PitchRollYaw;
+        };
     }
 
     private class InstakePhotos extends AsyncTask<String, Object, Void> {

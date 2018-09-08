@@ -10,11 +10,18 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.theta360.sample.v2.view.ImageRow;
 
@@ -34,10 +41,15 @@ public class ImageListActivity extends Activity {
 	private byte[] thumbnail;
 //    private ImageList360Activity.GetImageSizeTask getImageSizeTask = null;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_object_list);
+
+		// ツールバーをアクションバーとしてセット
+		MenuInflater inflater = getMenuInflater();
+
 
 		Log.d("debug","*** Start ImageList2D_Activity ***");
 
@@ -85,6 +97,41 @@ public class ImageListActivity extends Activity {
 				fileId = thumnail2image360( _files[position].getAbsolutePath());
 				thumbnail = convertFile(files.get(position));
 				GLPhotoActivity.startActivityForResult(ImageListActivity.this, cameraIpAddress, fileId, thumbnail, false);
+			}
+		});
+	}
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.to_take_photo, menu);
+		return true;
+	}
+	/**
+	 * onOptionsItemSelected Method
+	 * @param item Process menu
+	 * @return Menu process continuation feasibility value
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+			case R.id.takePhoto:
+				// 写真撮影画面（Activity）に遷移
+				Intent intent = new Intent(getApplication(), TakePhotoActivity.class);
+				startActivity(intent);
+				break;
+			default:
+				break;
+		}
+		return true;
+	}
+
+	private void changeCameraStatus(final int resid) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				//textCameraStatus.setText(resid);
 			}
 		});
 	}
@@ -240,7 +287,6 @@ public class ImageListActivity extends Activity {
 
 
 	}
-
 
 	public byte[] convertFile(File file) {
 		try (FileInputStream inputStream = new FileInputStream(file);) {

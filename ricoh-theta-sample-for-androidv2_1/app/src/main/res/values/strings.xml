@@ -22,6 +22,6 @@
     <string name="description">picture</string>
 
     <string name="title_activity_image2_d">Image2D</string>
-    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_button">Home</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
