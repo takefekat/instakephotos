@@ -3,7 +3,10 @@ package com.theta360.sample.v2;
 
 import android.graphics.Bitmap;
 import android.util.Log;
+import com.theta360.sample.v2.network.ImageData;
+import com.theta360.sample.v2.GLPhotoActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import static java.lang.Math.cos;
@@ -16,7 +19,7 @@ public class CuttingImage {
     }
 
 
-    public Bitmap[] cut(Bitmap bmp1,double W, double H, double alpha_bu, double beta_bu) {
+    public Bitmap[] cut(Bitmap bmp1,double pitch_roll_yaw[],double W, double H, double alpha_bu, double beta_bu) {
 
         double B = Teisu.A * H / W;
         //double kakudo = Teisu.PI;
@@ -24,12 +27,18 @@ public class CuttingImage {
         Bitmap [] Out_bmp =new Bitmap[50];
         Bitmap bmp2 = Bitmap.createScaledBitmap(bmp1,5376,2688,false);
 
-
         int num=0;
         double alpha,beta;
         vector1 Xh = new vector1();
         vector1 Xd = new vector1();
         vector1 Sx = new vector1();
+        vector1 Sx1 = new vector1();
+
+        double pitch,roll,yaw;
+        pitch =- pitch_roll_yaw[0]/360.0*Math.PI*2.0;
+        roll = -pitch_roll_yaw[1]/360.0*Math.PI*2.0;
+        yaw = -pitch_roll_yaw[2]/360.0*Math.PI*2.0;
+
 
         for(beta=-Math.PI/2*2/4; beta < Math.PI/2*3/4 ;beta = beta + beta_bu) {
             for (alpha = 0; alpha < Math.PI * 2; alpha = alpha + alpha_bu) {
@@ -70,14 +79,24 @@ public class CuttingImage {
                         t = Teisu.R / Math.sqrt(Xd.x * Xd.x + Xd.y * Xd.y + Xd.z * Xd.z);
 
                         Sx.Enter(t * Xd.x, t * Xd.y, t * Xd.z);
+
+                        //pitch,rollの回転を考慮
+                        X_temp = Sx.x;
+                        Y_temp = Sx.y * Math.cos(roll) - Sx.z * Math.sin(roll);
+                        Z_temp = Sx.y * Math.sin(roll) + Sx.z * Math.cos(roll);
+
+                        Sx1.Enter(X_temp * Math.cos(pitch) + Z_temp * Math.sin(pitch),
+                                Y_temp,
+                                -X_temp * Math.sin(pitch) + Z_temp * Math.cos(pitch));
                         //Sx.print();
                         double theta, gamma;
-                        if (Sx.y >= 0) {
-                            theta = Math.acos(Sx.x / Math.sqrt(Sx.x * Sx.x + Sx.y * Sx.y));
+                        if (Sx1.y >= 0) {
+                            theta = Math.acos(Sx1.x / Math.sqrt(Sx1.x * Sx1.x + Sx1.y * Sx1.y));
                             //cout << "aa" << endl;
                         } else {
-                            theta = 2 * Teisu.PI - Math.acos(Sx.x / Math.sqrt(Sx.x * Sx.x + Sx.y * Sx.y));
+                            theta = 2 * Teisu.PI - Math.acos(Sx1.x / Math.sqrt(Sx1.x * Sx1.x + Sx1.y * Sx1.y));
                         }
+
                         //if(Sx.y<0)	theta = 2*PI- acos(Sx.x/R);
                         //cout << "bb" << endl;
                         gamma = Math.atan(Sx.z / Math.sqrt(Sx.x * Sx.x + Sx.y * Sx.y));
@@ -87,10 +106,18 @@ public class CuttingImage {
                         x =  5376-(theta / (2 * Teisu.PI) * 5376-1);
                         y = -gamma / (Teisu.PI / 2) * 2688.0 / 2.0 + 2688.0 / 2.0;
                         if(x>=5376) {
-                            x=5375;
-                        }
+                            x=x-5376;
+                        }else
                         if(x<0) {
-                            x=0;
+                            x = 5376+x;
+
+                        }
+                        if(y>=2688) {
+                            y=y-2688;
+                        }else
+                        if(y<0) {
+                            y = 2688+y;
+
                         }
                         //Log.i("Debug", "出力画像ピクセル(" + a + "," + b + ")");
                         //Log.i("Debug", "ピクセル(" + x + "," + y + ")");

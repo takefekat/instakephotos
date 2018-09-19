@@ -40,11 +40,14 @@ import com.theta360.sample.v2.view.MJpegView;
 
 import org.json.JSONException;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -348,13 +351,13 @@ public class TakePhotoActivity extends Activity {
         @Override
         protected void onPostExecute(HttpConnector.ShootResult result) {
             if (result == HttpConnector.ShootResult.FAIL_CAMERA_DISCONNECTED) {
-            //	logViewer.append("takePicture:FAIL_CAMERA_DISCONNECTED");
+                //	logViewer.append("takePicture:FAIL_CAMERA_DISCONNECTED");
             } else if (result == HttpConnector.ShootResult.FAIL_STORE_FULL) {
-            //	logViewer.append("takePicture:FAIL_STORE_FULL");
+                //	logViewer.append("takePicture:FAIL_STORE_FULL");
             } else if (result == HttpConnector.ShootResult.FAIL_DEVICE_BUSY) {
-            //	logViewer.append("takePicture:FAIL_DEVICE_BUSY");
+                //	logViewer.append("takePicture:FAIL_DEVICE_BUSY");
             } else if (result == HttpConnector.ShootResult.SUCCESS) {
-            //	logViewer.append("takePicture:SUCCESS");
+                //	logViewer.append("takePicture:SUCCESS");
             }
         }
 
@@ -448,7 +451,7 @@ public class TakePhotoActivity extends Activity {
      Input : fileid
      Task : 360°画像、サムネイル、(pitch, roll, yaw)をファイル保存
      instakePhotos Task起動
-    ********************/
+     ********************/
     private class StoreFileTask extends AsyncTask<String, Object, Void> {
 
         protected Void doInBackground(String ... fileId){
@@ -597,12 +600,15 @@ public class TakePhotoActivity extends Activity {
             Bitmap image360_bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             Log.d("debug","Complete Load file");
 
+            //画像のpitch,roll,yawを取得する
+            String info_image360_fname = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/info/info_" + image360_fname;
+            double[] pitch_roll_yaw = readFileTodoubles(info_image360_fname);
 
             // 2D画像切り取り
             CuttingImage  cutter = new CuttingImage();
             //Bitmap image2d_bitmap = cutter.cut(image360_bitmap,0.8,0.8,0,0);
             Bitmap [] image2d_bitmap_a =new Bitmap[50];
-            image2d_bitmap_a = cutter.cut(image360_bitmap,1.0,1.0,2 * Math.PI / 10,Math.PI /2/4);
+            image2d_bitmap_a = cutter.cut(image360_bitmap,pitch_roll_yaw,1.0,1.0,2 * Math.PI / 10,Math.PI /2/4);
             Log.d("debug","Complete cut image");
 
             ArrayList<Integer> output_photos = new ArrayList();
@@ -647,6 +653,34 @@ public class TakePhotoActivity extends Activity {
                 }
             }
             Log.d("debug", "*** END instakePhotos Task ***");
+            return null;
+        }
+
+        //pitch,roll,yawのデータ読み込み用
+        public double[] readFileTodoubles(String filePath) {
+            FileReader fr = null;
+            BufferedReader br = null;
+            double[] res = new double[3];
+            try {
+                fr = new FileReader(filePath);
+                br = new BufferedReader(fr);
+
+                String line;
+                for (int i=0; i<3; i++) {
+                    if((line = br.readLine()) != null) {
+                        res[i] = Double.parseDouble(line);
+                    }else{
+                        Log.d("debug","pitch,roll,yawファイルが壊れています。");
+                    }
+                }
+                br.close();
+                fr.close();
+                return res;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return null;
         }
 
