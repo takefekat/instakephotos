@@ -601,7 +601,9 @@ public class TakePhotoActivity extends Activity {
             Log.d("debug","Complete Load file");
 
             //画像のpitch,roll,yawを取得する
-            String info_image360_fname = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/info/info_" + image360_fname;
+            String info_image360_fname = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/info/info_" + getfilename(fileId[0]);
+            info_image360_fname = info_image360_fname.substring(0,info_image360_fname.length()-3) + "txt";
+            Log.d("debug",info_image360_fname);
             double[] pitch_roll_yaw = readFileTodoubles(info_image360_fname);
 
             // 2D画像切り取り
