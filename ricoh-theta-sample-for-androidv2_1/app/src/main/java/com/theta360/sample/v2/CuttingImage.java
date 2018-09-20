@@ -36,7 +36,7 @@ public class CuttingImage {
 
         double pitch,roll,yaw;
         pitch =- pitch_roll_yaw[0]/360.0*Math.PI*2.0;
-        roll = -pitch_roll_yaw[1]/360.0*Math.PI*2.0;
+        roll = pitch_roll_yaw[1]/360.0*Math.PI*2.0;
         yaw = -pitch_roll_yaw[2]/360.0*Math.PI*2.0;
 
 
@@ -99,7 +99,7 @@ public class CuttingImage {
 
                         //if(Sx.y<0)	theta = 2*PI- acos(Sx.x/R);
                         //cout << "bb" << endl;
-                        gamma = Math.atan(Sx.z / Math.sqrt(Sx.x * Sx.x + Sx.y * Sx.y));
+                        gamma = Math.atan(Sx1.z / Math.sqrt(Sx1.x * Sx1.x + Sx1.y * Sx1.y));
                         //cout << theta <<","<< gamma <<endl;
                         //cout << gamma <<endl;
                         double x, y;
