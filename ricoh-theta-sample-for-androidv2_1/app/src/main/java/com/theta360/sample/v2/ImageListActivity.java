@@ -50,6 +50,35 @@ public class ImageListActivity extends Activity {
 		// ツールバーをアクションバーとしてセット
 		MenuInflater inflater = getMenuInflater();
 
+		Log.d("debug","StoreFileTask Start");
+
+		String status = Environment.getExternalStorageState();
+		String Path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image";
+		File Dir = new File(Path);
+		String thumbnailPath = Path + "/thumbnail/";
+		File thumbnailDir = new File(thumbnailPath);
+		String image360Path = Path + "/image360/";
+		File image360Dir = new File(image360Path);
+		String infoPath = Path + "/info/";
+		File infoDir = new File(infoPath);
+
+		if(status.equals(Environment.MEDIA_MOUNTED)){
+			//ディレクトリがなければ作成する
+			if(!Dir.exists()){
+				Dir.mkdir();
+			}
+			if(!thumbnailDir.exists()){
+				thumbnailDir.mkdir();
+			}
+			if(!image360Dir.exists()){
+				image360Dir.mkdir();
+			}
+			if(!infoDir.exists()){
+				infoDir.mkdir();
+			}
+		}else{
+			Log.d("debug","外部ストレージなし");
+		}
 
 		Log.d("debug","*** Start ImageList2D_Activity ***");
 
