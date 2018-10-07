@@ -55,6 +55,7 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Activity that displays the photo list
@@ -628,12 +629,21 @@ public class TakePhotoActivity extends Activity {
             }
 
             //resultsを認識率の高い順にソート
-            Collections.sort(myTensorFlow.results, new Classifier.ScoreCmp());
+            Collections.sort(myTensorFlow.results_food, new Classifier.ScoreCmp());
+            Collections.sort(myTensorFlow.results_human, new Classifier.ScoreCmp());
 
             //識別率の高い画像の番号を保存
+            ArrayList<Integer> output_photos_food = new ArrayList();
+            ArrayList<Integer> output_photos_human = new ArrayList();
+            for(int i = 0; i < output_num; i++){
+                output_photos_food.add(Integer.parseInt(myTensorFlow.results_food.get(i).getImageId()));
+                output_photos_human.add(Integer.parseInt(myTensorFlow.results_human.get(i).getImageId()));
+            }
+
+            //TODO 上記2種類のoutputがfood、humanに対応．以下で保存と表示が必要．(今は暫定)
             ArrayList<Integer> output_photos = new ArrayList();
             for(int i = 0; i < output_num; i++){
-                output_photos.add(Integer.parseInt(myTensorFlow.results.get(i).getImageId()));
+                output_photos.add(output_photos_food.get(i));
             }
 
             //モデルクローズ
@@ -912,7 +922,8 @@ public class TakePhotoActivity extends Activity {
 
         private Classifier classifier;
 
-        ArrayList<Classifier.Recognition> results = new ArrayList<Classifier.Recognition>();
+        ArrayList<Classifier.Recognition> results_food = new ArrayList<Classifier.Recognition>();
+        ArrayList<Classifier.Recognition> results_human = new ArrayList<Classifier.Recognition>();
 
         MyTensorFlow() {
             INPUT_SIZE = 299;
@@ -959,7 +970,16 @@ public class TakePhotoActivity extends Activity {
                     0, true);//sensorOrientation, MAINTAIN_ASPECT
 
             croppedBitmap = Bitmap.createBitmap(_inputImage, 0, 0, _inputImage.getWidth(), _inputImage.getHeight(), imageToCropTransform, true);
-            results.add(classifier.recognizeImage(croppedBitmap, _image_num));
+            List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap, _image_num);
+            for(int i = 0; i < results.size(); i++){
+                if(results.get(i).getTitle().equals("osyafood")){
+                    results_food.add(results.get(i));
+                }else if(results.get(i).getTitle().equals("osyahuman")){
+                    results_human.add(results.get(i));
+                }else{
+                    Log.d("debug","Unmatching labels");
+                }
+            }
         }
 
         /**

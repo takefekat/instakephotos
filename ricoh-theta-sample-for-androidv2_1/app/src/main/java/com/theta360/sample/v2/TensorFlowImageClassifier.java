@@ -21,6 +21,8 @@ import android.graphics.Bitmap;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import org.tensorflow.Operation;
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
@@ -118,7 +120,7 @@ public class TensorFlowImageClassifier implements Classifier {
   }
 
   @Override
-  public Recognition recognizeImage(final Bitmap bitmap, final String imageId) {
+  public List<Recognition> recognizeImage(final Bitmap bitmap, final String imageId) {
     // Log this method so that it can be analyzed with systrace.
     //Trace.beginSection("recognizeImage");
 
@@ -150,14 +152,14 @@ public class TensorFlowImageClassifier implements Classifier {
     //Trace.endSection();
 
     //outputsにinstabae,notinstabaeの値が入っている
-      Recognition instabae_recog = null;
+      ArrayList<Recognition> recognitions = new ArrayList<Recognition>();
       for (int i = 0; i < outputs.length; ++i) {
-          if (labels.get(i).equals("instabae")) {
-              instabae_recog = new Recognition(
-                      "" + i, labels.get(i), outputs[i], null, imageId);
+          if (labels.get(i).equals("osyafood")||labels.get(i).equals("osyahuman")) {
+              recognitions.add(new Recognition(
+                      "" + i, labels.get(i), outputs[i], null, imageId));
           }
       }
-      return instabae_recog;
+      return recognitions;
   }
 
   @Override

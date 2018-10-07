@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.RectF;
 
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Generic interface for interacting with different recognition engines.
@@ -111,7 +112,7 @@ public interface Classifier {
   }
 
   //List<Recognition> recognizeImage(Bitmap bitmap, String imageId);
-  Recognition recognizeImage(Bitmap bitmap, String imageId);
+  List<Recognition> recognizeImage(Bitmap bitmap, String imageId);
 
   void enableStatLogging(final boolean debug);
 
