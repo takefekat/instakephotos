@@ -1,2 +1,5 @@
-instabae
-notinstabae
+dasafood
+dasahuman
+osyafood
+osyahuman
+other
