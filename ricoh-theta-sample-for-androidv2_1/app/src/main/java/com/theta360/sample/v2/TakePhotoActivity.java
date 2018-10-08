@@ -608,10 +608,11 @@ public class TakePhotoActivity extends Activity {
             double[] pitch_roll_yaw = readFileTodoubles(info_image360_fname);
 
             // 2D画像切り取り
-            CuttingImage  cutter = new CuttingImage();
-            //Bitmap image2d_bitmap = cutter.cut(image360_bitmap,0.8,0.8,0,0);
-            Bitmap [] image2d_bitmap_a =new Bitmap[50];
-            image2d_bitmap_a = cutter.cut(image360_bitmap,pitch_roll_yaw,1.0,1.0,2 * Math.PI / 10,Math.PI /2/4);
+            CuttingImage cutter = new CuttingImage();
+            ArrayList<Bitmap> image2d_bitmap_a = new ArrayList<Bitmap>();
+
+            //image2d_bitmap_a = cutter.cut(image360_bitmap,pitch_roll_yaw,1.0,1.0,2 * Math.PI / 10,Math.PI /2/4);
+            image2d_bitmap_a = cutter.cut(image360_bitmap, pitch_roll_yaw,0.5, 0.5, 0,null,150);
             Log.d("debug","Complete cut image");
 
             //TODO 上位何個を出力するか定数として一か所で定義するか検討
@@ -624,8 +625,8 @@ public class TakePhotoActivity extends Activity {
 
             //TODO ビットマップの数と合わせる
             //切り取った画像を認識してinstabaeを抽出(resultsに代入)
-            for(int i = 0; i < 50; i++){
-               myTensorFlow.startRecognition(image2d_bitmap_a[i], Integer.toString(i));
+            for(int i = 0; i < image2d_bitmap_a.size(); i++){
+               myTensorFlow.startRecognition(image2d_bitmap_a.get(i), Integer.toString(i));
             }
 
             //resultsを認識率の高い順にソート
@@ -640,10 +641,17 @@ public class TakePhotoActivity extends Activity {
                 output_photos_human.add(Integer.parseInt(myTensorFlow.results_human.get(i).getImageId()));
             }
 
+
             //TODO 上記2種類のoutputがfood、humanに対応．以下で保存と表示が必要．(今は暫定)
             ArrayList<Integer> output_photos = new ArrayList();
             for(int i = 0; i < output_num; i++){
                 output_photos.add(output_photos_food.get(i));
+            }
+
+            //上で分かった識別率の高い画像だけ画質を上げる
+            for(int i = 0; i < output_num; i++){
+                image2d_bitmap_a.set( output_photos.get(i),
+                        cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos.get(i)));
             }
 
             //モデルクローズ
@@ -674,7 +682,7 @@ public class TakePhotoActivity extends Activity {
                 File image2d_file = new File(image2d_fname);
                 try {
                     FileOutputStream outstream = new FileOutputStream(image2d_file);
-                    image2d_bitmap_a[index].compress(Bitmap.CompressFormat.JPEG, 100, outstream);
+                    image2d_bitmap_a.get(index).compress(Bitmap.CompressFormat.JPEG, 100, outstream);
                     outstream.flush();//ファイルとして出力
                     outstream.close();//使ったらすぐに閉じる
                     Log.d("debug", "2D画像保存完了:" + image2d_file);
@@ -682,6 +690,33 @@ public class TakePhotoActivity extends Activity {
                     Log.d("debug", "2D画像保存不可");
                 }
             }
+
+            //球のサムネイル画像用のディレクトリを生成
+            String thumbnailcirclePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/thumbnailcircle/";
+            File thumbnailcircleDir = new File(thumbnailcirclePath);
+            if(status.equals(Environment.MEDIA_MOUNTED)){
+                //ディレクトリがなければ作成する
+                if(!image2dDir.exists()){
+                    thumbnailcircleDir.mkdir();
+                }
+            }else{
+                Log.d("debug","外部ストレージなし");
+                return null;
+            }
+
+            //球サムネイル画像の保存
+            String thumbnailcircle_fname = thumbnailcircleDir.getAbsolutePath() + "/thumbnailcircle_" + getfilename(fileId[0]);
+            File thumbnailcircle_file = new File(thumbnailcircle_fname);
+            try {
+                FileOutputStream outstream = new FileOutputStream(thumbnailcircle_file);
+                cutter.ball_cut(image360_bitmap,150,pitch_roll_yaw).compress(Bitmap.CompressFormat.JPEG, 100, outstream);
+                outstream.flush();//ファイルとして出力
+                outstream.close();//使ったらすぐに閉じる
+                Log.d("debug", "球状のサムネイル画像を保存画像保存完了:" + thumbnailcircle_file);
+            } catch (IOException ie) {
+                Log.d("debug", "球場のサムネイル画像保存不可");
+            }
+
             Log.d("debug", "*** END instakePhotos Task ***");
             return null;
         }
