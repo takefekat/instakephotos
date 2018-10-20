@@ -457,8 +457,7 @@ public class TakePhotoActivity extends Activity {
 
         protected Void doInBackground(String ... fileId){
 
-            Log.d("debug","StoreFileTask Start");
-            Log.d("debug",fileId[0]);
+            Log.d("debug","*** StoreFileTask Start *** ");
 
             String status = Environment.getExternalStorageState();
             String Path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image";
@@ -696,7 +695,7 @@ public class TakePhotoActivity extends Activity {
             File thumbnailcircleDir = new File(thumbnailcirclePath);
             if(status.equals(Environment.MEDIA_MOUNTED)){
                 //ディレクトリがなければ作成する
-                if(!image2dDir.exists()){
+                if(!thumbnailcircleDir.exists()){
                     thumbnailcircleDir.mkdir();
                 }
             }else{
@@ -993,7 +992,7 @@ public class TakePhotoActivity extends Activity {
                 classifier.close();
         }
 
-        private void startRecognition(Bitmap _inputImage, String _image_num) {
+        public void startRecognition(Bitmap _inputImage, String _image_num) {
 
             inputWidth = _inputImage.getWidth();
             inputHeight = _inputImage.getHeight();
