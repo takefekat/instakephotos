@@ -413,7 +413,7 @@ public class ImageListActivity extends Activity {
 			//球サムネイル画像の保存
 			try {
 				FileOutputStream outstream = new FileOutputStream(myFileAccess.thumbnailcircle);
-				cutter.ball_cut(image360_bitmap,150,pitch_roll_yaw).compress(Bitmap.CompressFormat.JPEG, 200, outstream);
+				cutter.ball_cut(image360_bitmap,300,pitch_roll_yaw).compress(Bitmap.CompressFormat.JPEG, 100, outstream);
 				outstream.flush();//ファイルとして出力
 				outstream.close();//使ったらすぐに閉じる
 				Log.d("debug", "球状のサムネイル画像を保存画像保存完了:" + myFileAccess.thumbnailcircle);
