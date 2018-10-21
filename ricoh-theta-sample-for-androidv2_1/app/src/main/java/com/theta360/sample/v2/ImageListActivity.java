@@ -25,6 +25,7 @@ import android.widget.TabHost;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import com.theta360.sample.v2.network.HttpConnector;
 import com.theta360.sample.v2.view.ImageRow;
 
 import java.io.BufferedReader;
@@ -65,59 +66,63 @@ public class ImageListActivity extends Activity {
 		// 2D切り取り画像
 		checkFolder();
 
-		 String storagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/thumbnail/";
-		 Log.d("debug","サムネイル画像保存先 = "+storagePath);
-		//String storagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/thumbnailcircle/";
-		//Log.d("debug","サムネイル画像保存先 = "+storagePath);
-
-		final File[] _files = new File(storagePath).listFiles();
-		final ArrayList<File> files = new ArrayList<File>();
-
-		Log.d("debug","360 image数 = "+Integer.toString(_files.length));
-		for (int i=0; i<_files.length; i++) {
-			if(_files[i].isFile()) {
-				files.add(_files[i]);
-				members[i] = _files[i].getName();
-				Log.d("debug",_files[i].getName());
+		//サムネ画像取得（球体版優先）
+		final ArrayList<File> thumbnailList = new ArrayList<File>();
+		MyFolderAccess myFolderAccess = new MyFolderAccess();
+		ArrayList<File> image360List = myFolderAccess.getImage360FileList();
+		Log.d("debug","360 image数 = "+Integer.toString(image360List.size()));
+		for (int i=0; i<image360List.size(); i++) {
+			if(image360List.get(i).isFile()) {
+				MyFileAccess myFileAccess = new MyFileAccess(image360List.get(i).getName());
+				if(myFileAccess.thumbnailcircle.exists()) {
+					thumbnailList.add(myFileAccess.thumbnailcircle);
+					//members[i] = myFileAccess.thumbnailcircle.getAbsolutePath();
+					Log.d("debug","サムネ有：" +  myFileAccess.thumbnailcircle);
+				}else if(myFileAccess.thumbnail.exists()){
+					thumbnailList.add(myFileAccess.thumbnail);
+					//members[i] = myFileAccess.thumbnail.getAbsolutePath();
+					Log.d("debug","サムネ有：" +  myFileAccess.thumbnail);
+				}
 			}
 		}
-		Log.d("debug","_files.size() = " + Integer.toString(_files.length));
+
 		// GridViewのインスタンスを生成
 		GridView gridview = (GridView) findViewById(R.id.gridview2);
-		Log.d("debug","_files.size() = " + Integer.toString(_files.length));
-		//グリッド2列表示
 		gridview.setNumColumns(2);
-		Log.d("debug","_files.size() = " + Integer.toString(_files.length));
+
 		//表示する画像を取得
 		ArrayList<Bitmap> lstBitmap = new ArrayList<Bitmap>();
-		for(File file: files) {
+		for(File file: thumbnailList) {
 			byte[] byteArray = convertFile(file);
 			lstBitmap.add(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
+			Log.d("debug",file + " size : " + byteArray.length );
 		}
+        Log.d("debug","lstBitmap size = " + lstBitmap.size());
 
-		Log.d("debug","lstBitmap size = " + lstBitmap.size());
 		//アダプター作成
 		BitmapAdapter adapter = new BitmapAdapter(getApplicationContext(), lstBitmap);
-
-		//グリッドにアダプタを設定
 		gridview.setAdapter(adapter);
 
 		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				cameraIpAddress = getResources().getString(R.string.theta_ip_address);
-				fileId = thumnail2image360( _files[position].getAbsolutePath());
-				thumbnail = convertFile(files.get(position));
+				MyFileAccess myFileAccess = new MyFileAccess(thumbnailList.get(position).getName());
+				fileId = myFileAccess.image360.getAbsolutePath();
+				thumbnail = convertFile(thumbnailList.get(position));
+				Log.d("debug","ImageListActivity-->GLPhotoActivity" + Integer.toString(position) +" "+fileId);
 				GLPhotoActivity.startActivityForResult(ImageListActivity.this, cameraIpAddress, fileId, thumbnail, false);
 			}
 		});
 	}
+
+
 	public  void checkFolder(){
 		Log.d("debug","*** Start checkFolder() *** ");
 
-		MyFileAccess myFileAccess = new MyFileAccess();
-		myFileAccess.InitDirctory();
+		MyFolderAccess myFolderAccess = new MyFolderAccess();
+		myFolderAccess.InitDirctory();
 
-		ArrayList<File> image360filelist= myFileAccess.GetImage360FileList();
+		ArrayList<File> image360filelist= myFolderAccess.getImage360FileList();
 
 		for (File image360file : image360filelist){
 			MyFileAccess myfile = new MyFileAccess(image360file.getName());
@@ -165,11 +170,7 @@ public class ImageListActivity extends Activity {
 		});
 	}
 
-	private String thumnail2image360(String string) {
-		return  Environment.getExternalStorageDirectory().getAbsolutePath() +
-				"/image/image360/"+
-				string.substring(string.length()-12);
-	}
+
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -339,28 +340,18 @@ public class ImageListActivity extends Activity {
 	private class InstakePhotos extends AsyncTask<String, Object, Void> {
 
 		@Override
-		protected Void doInBackground(String... fileId) {
+		protected Void doInBackground(String... fileId) { // fileId: /***/image/image360/image360_R0001275.JPG
 			Log.d("debug","*** Start instakePhotos Task ***");
 			Log.d("debug",fileId[0]);
 
-			// 360度画像　読み出し
-			String image360_fname = fileId[0];
-			Log.d("debug",image360_fname);
-			//image360_fname = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/image360/image360_" + image360_fname;
-			//Log.d("debug",image360_fname);
+			MyFileAccess myFileAccess = new MyFileAccess(fileId[0]);
 
-			File image360_file = new File(image360_fname);
-			byte[] byteArray = convertFile(image360_file);
-			Log.d("debug","Load convert file");
-			Log.d("debug",Integer.toString(byteArray.length));
-			Bitmap image360_bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-			Log.d("debug","Complete Load file");
+			// 360画像読み出し
+			Bitmap image360_bitmap = myFileAccess.getBitmapImage360();
+			Log.d("debug","Complete image360 Bitmap :" + myFileAccess.image360);
 
-			//画像のpitch,roll,yawを取得する
-			String info_image360_fname = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/info/info_" + getfilename(fileId[0]);
-			info_image360_fname = info_image360_fname.substring(0,info_image360_fname.length()-3) + "txt";
-			Log.d("debug",info_image360_fname);
-			double[] pitch_roll_yaw = readFileTodoubles(info_image360_fname);
+			// pitch,roll,yaw情報取得
+			double[] pitch_roll_yaw = myFileAccess.getImageInfo();
 
 			// 2D画像切り取り
 			CuttingImage cutter = new CuttingImage();
@@ -411,70 +402,21 @@ public class ImageListActivity extends Activity {
 
 			//モデルクローズ
 			myTensorFlow.endRecognition();
-
 			Log.d("debug","Complete cut image");
-
-			// 2D画像保存先フォルダ
-			String status = Environment.getExternalStorageState();
-			// dir 生成
-			String image2dPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/image2d/" + getfilename(fileId[0]);
-			image2dPath = image2dPath.substring(0,image2dPath.length()-4);
-			File image2dDir = new File(image2dPath);
-			if(status.equals(Environment.MEDIA_MOUNTED)){
-				//ディレクトリがなければ作成する
-				if(!image2dDir.exists()){
-					image2dDir.mkdir();
-				}
-				Log.d("debug","2d写真保存先："+image2dDir);
-			}else{
-				Log.d("debug","外部ストレージなし");
-				return null;
-			}
-
 
 			//2D画像の保存
 			for(int index : output_photos) {
-				String image2d_fname = image2dDir + "/image2d_" +Integer.toString(index)+ "_" + getfilename(fileId[0]);
-				File image2d_file = new File(image2d_fname);
-				Log.d("debug",  "2D画像file名："+image2d_fname);
-				Log.d("debug",  "2D画像file名："+image2d_file);
-				try {
-					Log.d("debug", "11111111111111111" );
-					FileOutputStream outstream = new FileOutputStream(image2d_file);
-					Log.d("debug", "22222222222222222");
-					image2d_bitmap_a.get(index).compress(Bitmap.CompressFormat.JPEG, 100, outstream);
-					Log.d("debug", "33333333333333333:");
-					outstream.flush();//ファイルとして出力
-					Log.d("debug", "44444444444444444:" );
-					outstream.close();//使ったらすぐに閉じる
-					Log.d("debug", "55555555555555555:" );
-				} catch (IOException ie) {
-					Log.d("debug", "2D画像保存不可");
-				}
-			}
-
-			//球のサムネイル画像用のディレクトリを生成
-			String thumbnailcirclePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/thumbnailcircle/";
-			File thumbnailcircleDir = new File(thumbnailcirclePath);
-			if(status.equals(Environment.MEDIA_MOUNTED)){
-				//ディレクトリがなければ作成する
-				if(!thumbnailcircleDir.exists()){
-					thumbnailcircleDir.mkdir();
-				}
-			}else{
-				Log.d("debug","外部ストレージなし");
-				return null;
+				File image2d_file = new File(myFileAccess.image2D.getAbsolutePath() + "image2d_" + Integer.toString(index) + myFileAccess.fileid + ".JPG");
+				myFileAccess.storeImage2D(image2d_bitmap_a.get(index), image2d_file);
 			}
 
 			//球サムネイル画像の保存
-			String thumbnailcircle_fname = thumbnailcircleDir.getAbsolutePath() + "/thumbnailcircle_" + getfilename(fileId[0]);
-			File thumbnailcircle_file = new File(thumbnailcircle_fname);
 			try {
-				FileOutputStream outstream = new FileOutputStream(thumbnailcircle_file);
+				FileOutputStream outstream = new FileOutputStream(myFileAccess.thumbnailcircle);
 				cutter.ball_cut(image360_bitmap,150,pitch_roll_yaw).compress(Bitmap.CompressFormat.JPEG, 200, outstream);
 				outstream.flush();//ファイルとして出力
 				outstream.close();//使ったらすぐに閉じる
-				Log.d("debug", "球状のサムネイル画像を保存画像保存完了:" + thumbnailcircle_file);
+				Log.d("debug", "球状のサムネイル画像を保存画像保存完了:" + myFileAccess.thumbnailcircle);
 			} catch (IOException ie) {
 				Log.d("debug", "球場のサムネイル画像保存不可");
 			}
@@ -483,59 +425,8 @@ public class ImageListActivity extends Activity {
 			return null;
 		}
 
-		//pitch,roll,yawのデータ読み込み用
-		public double[] readFileTodoubles(String filePath) {
-			FileReader fr = null;
-			BufferedReader br = null;
-			double[] res = new double[3];
-			try {
-				fr = new FileReader(filePath);
-				br = new BufferedReader(fr);
 
-				String line;
-				for (int i=0; i<3; i++) {
-					if((line = br.readLine()) != null) {
-						res[i] = Double.parseDouble(line);
-					}else{
-						Log.d("debug","pitch,roll,yawファイルが壊れています。");
-					}
-				}
-				br.close();
-				fr.close();
-				return res;
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
 
-		public String getfilename(String fileId){
-
-			String[] list = fileId.split("_",0);
-			String fname = list[list.length-1];
-			return fname;
-		}
-
-		public byte[] convertFile(File file) {
-			try (FileInputStream inputStream = new FileInputStream(file);) {
-				ByteArrayOutputStream bout = new ByteArrayOutputStream();
-				byte[] buffer = new byte[1024];
-				while(true) {
-					int len = inputStream.read(buffer);
-					if(len < 0) {
-						break;
-					}
-					bout.write(buffer, 0, len);
-				}
-				return bout.toByteArray();
-			} catch (Exception e) {
-				Log.d("debug","CANNOT OPEN FILE:"+file.getAbsolutePath());
-				e.printStackTrace();
-			}
-			return null;
-		}
 	}
 
 	public class MyTensorFlow2 {

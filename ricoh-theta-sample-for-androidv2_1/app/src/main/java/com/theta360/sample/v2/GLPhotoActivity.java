@@ -71,7 +71,11 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
         Intent intent = getIntent();
         String cameraIpAddress = intent.getStringExtra(CAMERA_IP_ADDRESS);
         String fileId = intent.getStringExtra(OBJECT_ID);
-        byte[] byteThumbnail = intent.getByteArrayExtra(THUMBNAIL);
+
+        MyFileAccess myFileAccess = new MyFileAccess(fileId);
+        //byte[] byteThumbnail = intent.getByteArrayExtra(THUMBNAIL);
+        byte[] byteThumbnail = myFileAccess.getThumbnailByteArray();
+        Log.d("debug",Integer.toString(byteThumbnail.length ));
 
         ByteArrayInputStream inputStreamThumbnail = new ByteArrayInputStream(byteThumbnail);
         Drawable thumbnail = BitmapDrawable.createFromStream(inputStreamThumbnail, null);

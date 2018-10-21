@@ -28,18 +28,17 @@ public class ImageList2D_Activity extends Activity {
 
         Log.d("debug","*** Start ImageList2D_Activity ***");
 
-        // File名をTextViewに表示
-
         Intent intent = getIntent();
         final String fileId = intent.getStringExtra("OBJECT_ID");
 
         //Log.d("debug","2D画像保存先　：　" + fileId);
 
-        String storagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/image2d/" + getfilename(fileId);
-        storagePath = storagePath.substring(0,storagePath.length()-4);
-        Log.d("debug","2D画像保存先 = "+storagePath);
+        MyFileAccess myFileAccess = new MyFileAccess(fileId);
 
-        final File[] _files = new File(storagePath).listFiles();
+
+        Log.d("debug","2D画像保存先 = "+myFileAccess.image2D);
+
+        final File[] _files = new File(myFileAccess.image2D.getAbsolutePath()).listFiles();
         ArrayList<File> files = new ArrayList<File>();
 
         Log.d("debug","2D image数 = "+Integer.toString(_files.length));
