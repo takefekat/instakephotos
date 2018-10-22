@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class MyFileAccess {
@@ -65,7 +66,6 @@ public class MyFileAccess {
         if(fileid == ""){
             Log.d("debug","fileIdが設定されていません。:ExistAllFiles()");
             AllFileExists = false;
-
         }else {
 
             if (!thumbnail.exists()) {
@@ -76,21 +76,15 @@ public class MyFileAccess {
                 Bitmap thumbnail_btmp = null;
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
-                //BitmapFactory.decodeFile(image360.getAbsolutePath(), options);
 
                 Log.d("debug","image360 size " + getBitmapImage360().getByteCount());
-                Log.d("debug","1111111111111");
                 /** 横の縮尺を求める */
                 int scaleW = options.outWidth / 96 + 1;
                 /** 縦の縮尺を求める */
                 int scaleH = options.outHeight / 96 + 1;
                 int scale = Math.max(scaleW, scaleH);
-                Log.d("debug","22222222222222");
                 options.inJustDecodeBounds = false;
-                Log.d("debug","33333333333333");
-                options.inSampleSize = 10;
-                Log.d("debug","44444444444444");
-
+                options.inSampleSize = scale;
                 thumbnail_btmp = BitmapFactory.decodeFile(image360.getAbsolutePath(), options);
 
                 //Log.d("debug", Integer.toString(thumbnail_btmp.getByteCount()));
@@ -115,7 +109,7 @@ public class MyFileAccess {
                 try {
                     FileOutputStream outstream = new FileOutputStream(thumbnailcircle);
                     CuttingImage cutter = new CuttingImage();
-                    cutter.ball_cut(this.getBitmapImage360(),150,getImageInfo()).compress(Bitmap.CompressFormat.JPEG, 100, outstream);
+                    cutter.ball_cut(this.getBitmapImage360(),500,getImageInfo()).compress(Bitmap.CompressFormat.JPEG, 100, outstream);
                     outstream.flush();//ファイルとして出力
                     outstream.close();//使ったらすぐに閉じる
                     Log.d("debug", "球状のサムネイル画像を保存完了:" + thumbnailcircle);
@@ -127,13 +121,19 @@ public class MyFileAccess {
 
             if (!image2D.exists()) {
                 Log.d("debug", "image2D Dir Not Exists.:ExistAllFiles()");
+                image2D.mkdir();
                 AllFileExists = false;
+            }else {
+                File[] image2Ds = image2D.listFiles();
+                if(image2Ds.length == 0){
+                    AllFileExists = false;
+                }
             }
             // TODO image2d/内に切り取られた画像が存在するか確認する
 
             if (!imageinfo.exists()) {
                 Log.d("debug", "info file Not Exists.:ExistAllFiles()");
-                AllFileExists = false;
+                //AllFileExists = false;
 
                 try {
                     Log.d("debug", "info file作成:" + imageinfo);
@@ -151,8 +151,6 @@ public class MyFileAccess {
 
         return AllFileExists;
     }
-
-
 
     // fileIdのimage360画像のBitmapを取得
     public Bitmap getBitmapImage360(){
@@ -202,6 +200,55 @@ public class MyFileAccess {
             outstream.close();//使ったらすぐに閉じる
         } catch (IOException ie) {
             Log.d("debug", "2D画像保存不可");
+        }
+    }
+
+    public void storeThumbnail(Bitmap btmp){
+        Log.d("debug",  "2D画像file名：" + thumbnail );
+        try {
+            FileOutputStream outstream = new FileOutputStream(thumbnail);
+            btmp.compress(Bitmap.CompressFormat.JPEG, 100, outstream);
+            outstream.flush();//ファイルとして出力
+            outstream.close();//使ったらすぐに閉じる
+        } catch (IOException ie) {
+            Log.d("debug", "2D画像保存不可");
+        }
+    }
+
+    public void storeImage360(Bitmap btmp){
+        Log.d("debug",  "2D画像file名：" + image360 );
+        try {
+            FileOutputStream outstream = new FileOutputStream(image360);
+            btmp.compress(Bitmap.CompressFormat.JPEG, 100, outstream);
+            outstream.flush();//ファイルとして出力
+            outstream.close();//使ったらすぐに閉じる
+        } catch (IOException ie) {
+            Log.d("debug", "2D画像保存不可");
+        }
+    }
+
+    public void storeInfo(Double p, Double r, Double y){
+        String pitch_s = BigDecimal.valueOf(p).toPlainString();
+        String roll_s = BigDecimal.valueOf(r).toPlainString();
+        String yaw_s = BigDecimal.valueOf(y).toPlainString();
+
+        try {
+            // FileWriterクラスのオブジェクトを生成する
+            FileWriter file = new FileWriter(imageinfo);
+            // PrintWriterクラスのオブジェクトを生成する
+            PrintWriter pw = new PrintWriter(new BufferedWriter(file));
+            //ファイルに書き込む
+            pw.println(pitch_s);
+            pw.println(roll_s);
+            pw.println(yaw_s);
+
+            //ファイルを閉じる
+            pw.close();
+            Log.d("debug","pitch, roll, yaw:出力完了" + imageinfo);
+            Log.d( "debug","(pitch,roll,yaw) = (" + pitch_s + ", " + roll_s + ", " + yaw_s );
+        } catch (IOException e) {
+            Log.d("debug","pitch, roll, yaw出力不可");
+            e.printStackTrace();
         }
     }
 

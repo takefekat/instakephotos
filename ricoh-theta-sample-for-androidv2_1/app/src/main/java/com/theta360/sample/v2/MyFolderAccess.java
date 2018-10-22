@@ -41,7 +41,7 @@ public class MyFolderAccess {
 
     // 全フォルダ作成
     // （image2Dフォルダの中には、360°画像のfileId名をフォルダ名とするフォルダを作成する）
-    public void InitDirctory(){
+    public void initDirctory(){
         String status = Environment.getExternalStorageState();
 
         if(status.equals(Environment.MEDIA_MOUNTED)){
@@ -89,6 +89,31 @@ public class MyFolderAccess {
         }
         return files;
     }
+
+    public ArrayList<File> getThumbnailFileList(){
+
+        ArrayList<File> thumbnailList = new ArrayList<File>();
+        ArrayList<File> image360List = getImage360FileList();
+        Log.d("debug","360 image数 = "+Integer.toString(image360List.size()));
+        for (int i=0; i<image360List.size(); i++) {
+            if(image360List.get(i).isFile()) {
+                MyFileAccess myFileAccess = new MyFileAccess(image360List.get(i).getName());
+                if(myFileAccess.thumbnailcircle.exists()) {
+                    thumbnailList.add(myFileAccess.thumbnailcircle);
+                    //members[i] = myFileAccess.thumbnailcircle.getAbsolutePath();
+                    Log.d("debug","サムネ有：" +  myFileAccess.thumbnailcircle);
+                }else if(myFileAccess.thumbnail.exists()){
+                    thumbnailList.add(myFileAccess.thumbnail);
+                    //members[i] = myFileAccess.thumbnail.getAbsolutePath();
+                    Log.d("debug","サムネ有：" +  myFileAccess.thumbnail);
+                }
+            }
+        }
+        return thumbnailList;
+    }
+
+
+
 
 
     /**********************************/

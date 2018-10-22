@@ -59,32 +59,16 @@ public class ImageListActivity extends Activity {
 		// ツールバーをアクションバーとしてセット
 		MenuInflater inflater = getMenuInflater();
 
-		// 全360°画像に以下が存在するか確認ー＞なければInstakePhoto Task起動
-		// thumbnail
-		// thumbnailcircle
-		// info
-		// 2D切り取り画像
+		// フォルダ生成
+		MyFolderAccess myFolderAccess = new MyFolderAccess();
+		myFolderAccess.initDirctory();
+
+		// 全360°画像に以下が存在するか確認ー＞なければ instakePhoto Task起動
 		checkFolder();
 
 		//サムネ画像取得（球体版優先）
-		final ArrayList<File> thumbnailList = new ArrayList<File>();
-		MyFolderAccess myFolderAccess = new MyFolderAccess();
-		ArrayList<File> image360List = myFolderAccess.getImage360FileList();
-		Log.d("debug","360 image数 = "+Integer.toString(image360List.size()));
-		for (int i=0; i<image360List.size(); i++) {
-			if(image360List.get(i).isFile()) {
-				MyFileAccess myFileAccess = new MyFileAccess(image360List.get(i).getName());
-				if(myFileAccess.thumbnailcircle.exists()) {
-					thumbnailList.add(myFileAccess.thumbnailcircle);
-					//members[i] = myFileAccess.thumbnailcircle.getAbsolutePath();
-					Log.d("debug","サムネ有：" +  myFileAccess.thumbnailcircle);
-				}else if(myFileAccess.thumbnail.exists()){
-					thumbnailList.add(myFileAccess.thumbnail);
-					//members[i] = myFileAccess.thumbnail.getAbsolutePath();
-					Log.d("debug","サムネ有：" +  myFileAccess.thumbnail);
-				}
-			}
-		}
+
+		final ArrayList<File> thumbnailList = myFolderAccess.getThumbnailFileList();
 
 		// GridViewのインスタンスを生成
 		GridView gridview = (GridView) findViewById(R.id.gridview2);
@@ -106,22 +90,31 @@ public class ImageListActivity extends Activity {
 		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				cameraIpAddress = getResources().getString(R.string.theta_ip_address);
-				MyFileAccess myFileAccess = new MyFileAccess(thumbnailList.get(position).getName());
-				fileId = myFileAccess.image360.getAbsolutePath();
-				thumbnail = convertFile(thumbnailList.get(position));
+				//MyFileAccess myFileAccess = new MyFileAccess(thumbnailList.get(position).getName());
+				//fileId = myFileAccess.image360.getAbsolutePath();
+				//thumbnail = convertFile(thumbnailList.get(position));
+				//Log.d("debug","ImageListActivity-->GLPhotoActivity" + Integer.toString(position) +" "+fileId);
+				//GLPhotoActivity.startActivityForResult(ImageListActivity.this, cameraIpAddress, fileId, thumbnail, false);
+
 				Log.d("debug","ImageListActivity-->GLPhotoActivity" + Integer.toString(position) +" "+fileId);
-				GLPhotoActivity.startActivityForResult(ImageListActivity.this, cameraIpAddress, fileId, thumbnail, false);
+				MyFileAccess myFileAccess = new MyFileAccess(thumbnailList.get(position).getName());
+				Intent intent = new Intent(getApplication(), GLPhotoActivity.class);
+
+				intent.putExtra("CAMERA_IP_ADDRESS", cameraIpAddress);
+				intent.putExtra("OBJECT_ID",myFileAccess.fileid);
+				intent.putExtra("THUMBNAIL",myFileAccess.getThumbnailByteArray());
+
+				startActivity(intent);
+
+
 			}
 		});
 	}
 
-
-	public  void checkFolder(){
+	private void checkFolder(){
 		Log.d("debug","*** Start checkFolder() *** ");
 
 		MyFolderAccess myFolderAccess = new MyFolderAccess();
-		myFolderAccess.InitDirctory();
-
 		ArrayList<File> image360filelist= myFolderAccess.getImage360FileList();
 
 		for (File image360file : image360filelist){
@@ -129,12 +122,13 @@ public class ImageListActivity extends Activity {
 
 			if(!myfile.ExistAllFiles()) {
 				Log.d("debug", myfile.image360 + " に関するファイルが足りません。");
-				InstakePhotos instakePhotos = new InstakePhotos();
+				ImageListActivity.InstakePhotos instakePhotos = new ImageListActivity.InstakePhotos();
 				instakePhotos.execute(myfile.image360.getAbsolutePath());
 			}
 		}
 		Log.d("debug","*** End checkFolder() *** ");
 	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,11 +136,15 @@ public class ImageListActivity extends Activity {
 		inflater.inflate(R.menu.to_take_photo, menu);
 		return true;
 	}
+
+
 	/**
 	 * onOptionsItemSelected Method
 	 * @param item Process menu
 	 * @return Menu process continuation feasibility value
 	 */
+
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		super.onOptionsItemSelected(item);
@@ -357,16 +355,16 @@ public class ImageListActivity extends Activity {
 			CuttingImage cutter = new CuttingImage();
 			ArrayList<Bitmap> image2d_bitmap_a = new ArrayList<Bitmap>();
 
-			//image2d_bitmap_a = cutter.cut(image360_bitmap,pitch_roll_yaw,1.0,1.0,2 * Math.PI / 10,Math.PI /2/4);
 			image2d_bitmap_a = cutter.cut(image360_bitmap, pitch_roll_yaw,0.5, 0.5, 0,null,150);
 			Log.d("debug","Complete cut image");
 
+
 			//TODO 上位何個を出力するか定数として一か所で定義するか検討
-			int output_num = 5;
+			int output_num = 3; //<変更>
 
 			//TODO モデル読み込みは事前の実施が可能(位置変更可)
 			//モデル読み込み
-			ImageListActivity.MyTensorFlow2 myTensorFlow = new MyTensorFlow2();
+			MyTensorFlow2 myTensorFlow = new MyTensorFlow2();
 			myTensorFlow.modelCreate();
 
 			//TODO ビットマップの数と合わせる
@@ -388,37 +386,30 @@ public class ImageListActivity extends Activity {
 			}
 
 
-			//TODO 上記2種類のoutputがfood、humanに対応．以下で保存と表示が必要．(今は暫定)
-			ArrayList<Integer> output_photos = new ArrayList();
+			//上で分かった識別率の高い画像だけ画質を上げる　<変更>
 			for(int i = 0; i < output_num; i++){
-				output_photos.add(output_photos_food.get(i));
-			}
+				image2d_bitmap_a.set( output_photos_food.get(i),
+						cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos_food.get(i)));
+				image2d_bitmap_a.set( output_photos_human.get(i),
+						cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos_human.get(i)));
 
-			//上で分かった識別率の高い画像だけ画質を上げる
-			for(int i = 0; i < output_num; i++){
-				image2d_bitmap_a.set( output_photos.get(i),
-						cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos.get(i)));
 			}
 
 			//モデルクローズ
 			myTensorFlow.endRecognition();
+
 			Log.d("debug","Complete cut image");
 
-			//2D画像の保存
-			for(int index : output_photos) {
-				File image2d_file = new File(myFileAccess.image2D.getAbsolutePath() + "image2d_" + Integer.toString(index) + myFileAccess.fileid + ".JPG");
-				myFileAccess.storeImage2D(image2d_bitmap_a.get(index), image2d_file);
+			// Human 2D画像保存
+			for(int index : output_photos_human) {
+				File image2d_human = new File(myFileAccess.image2D + "/image2d_human_" +Integer.toString(index) + myFileAccess.fileid + ".JPG");
+				myFileAccess.storeImage2D(image2d_bitmap_a.get(index),image2d_human);
 			}
 
-			//球サムネイル画像の保存
-			try {
-				FileOutputStream outstream = new FileOutputStream(myFileAccess.thumbnailcircle);
-				cutter.ball_cut(image360_bitmap,300,pitch_roll_yaw).compress(Bitmap.CompressFormat.JPEG, 100, outstream);
-				outstream.flush();//ファイルとして出力
-				outstream.close();//使ったらすぐに閉じる
-				Log.d("debug", "球状のサムネイル画像を保存画像保存完了:" + myFileAccess.thumbnailcircle);
-			} catch (IOException ie) {
-				Log.d("debug", "球場のサムネイル画像保存不可");
+			// Food 2D画像保存
+			for(int index : output_photos_food) {
+				File image2d_food = new File(myFileAccess.image2D + "/image2d_food_" +Integer.toString(index) + myFileAccess.fileid + ".JPG");
+				myFileAccess.storeImage2D(image2d_bitmap_a.get(index),image2d_food);
 			}
 
 			Log.d("debug", "*** END instakePhotos Task ***");

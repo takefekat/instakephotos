@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.theta360.sample.v2.model.ImageSize;
 import com.theta360.sample.v2.network.HttpConnector;
@@ -459,56 +460,13 @@ public class TakePhotoActivity extends Activity {
 
             Log.d("debug","*** StoreFileTask Start *** ");
 
-            String status = Environment.getExternalStorageState();
-            String Path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image";
-            File Dir = new File(Path);
-            String thumbnailPath = Path + "/thumbnail/";
-            File thumbnailDir = new File(thumbnailPath);
-            String image360Path = Path + "/image360/";
-            File image360Dir = new File(image360Path);
-            String infoPath = Path + "/info/";
-            File infoDir = new File(infoPath);
-
-            if(status.equals(Environment.MEDIA_MOUNTED)){
-                //ディレクトリがなければ作成する
-                if(!Dir.exists()){
-                    Dir.mkdir();
-                }
-                if(!thumbnailDir.exists()){
-                    thumbnailDir.mkdir();
-                }
-                if(!image360Dir.exists()){
-                    image360Dir.mkdir();
-                }
-                if(!infoDir.exists()){
-                    infoDir.mkdir();
-                }
-            }else{
-                Log.d("debug","外部ストレージなし");
-                return null;
-            }
-
-            //  ファイル名は、sampleのものを流用。
-            //  接頭辞を付けて区別
-            String fname = getfilename(fileId[0]);
-            String thumbnail_fname = thumbnailDir.getAbsolutePath() + "/thumbnail_" + fname;
-            String image360_fname = image360Dir.getAbsolutePath() + "/image360_" + fname;
-            String info_fname = infoDir.getAbsolutePath() + "/info_" + fname;
-            info_fname = info_fname.substring(0,info_fname.length()-3) + "txt";
-
             HttpConnector camera = new HttpConnector(getResources().getString(R.string.theta_ip_address));
+
+            MyFileAccess myFileAccess = new MyFileAccess(fileId[0]);
 
             // Thumbnail画像の保存
             Bitmap thumbnail = camera.getThumb(fileId[0]);
-            try{
-                FileOutputStream outstream =new FileOutputStream(thumbnail_fname);
-                thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, outstream);
-                outstream.flush();//ファイルとして出力
-                outstream.close();//使ったらすぐに閉じる
-                Log.d("debug","サムネイル保存完了:" + thumbnail_fname);
-            }catch(IOException ie){
-                Log.d("debug","サムネイル保存不可");
-            }
+            myFileAccess.storeThumbnail(thumbnail);
 
             //360画像の保存
             ImageData imageData = camera.getImage(fileId[0], new HttpDownloadListener() {
@@ -523,39 +481,11 @@ public class TakePhotoActivity extends Activity {
                 }
             });
             Bitmap image360 = BitmapFactory.decodeByteArray(imageData.getRawData(), 0, imageData.getRawData().length);
-            try{
-                FileOutputStream outstream =new FileOutputStream(image360_fname);
-                image360.compress(Bitmap.CompressFormat.JPEG, 100, outstream);
-                outstream.flush();//ファイルとして出力
-                outstream.close();//使ったらすぐに閉じる
-                Log.d("debug","360画像保存完了:" + image360_fname);
-            }catch(IOException ie){
-                Log.d("debug","360画像保存不可");
-            }
+            myFileAccess.storeImage360(image360);
 
             // pitch,roll,yawの保存
-            String pitch_s = BigDecimal.valueOf(imageData.getPitch()).toPlainString();
-            String roll_s = BigDecimal.valueOf(imageData.getRoll()).toPlainString();
-            String yaw_s = BigDecimal.valueOf(imageData.getYaw()).toPlainString();
+            myFileAccess.storeInfo(imageData.getPitch(),imageData.getRoll(),imageData.getYaw());
 
-            try {
-                // FileWriterクラスのオブジェクトを生成する
-                FileWriter file = new FileWriter(info_fname);
-                // PrintWriterクラスのオブジェクトを生成する
-                PrintWriter pw = new PrintWriter(new BufferedWriter(file));
-                //ファイルに書き込む
-                pw.println(pitch_s);
-                pw.println(roll_s);
-                pw.println(yaw_s);
-
-                //ファイルを閉じる
-                pw.close();
-                Log.d("debug","pitch, roll, yaw:出力完了" + info_fname);
-                Log.d( "debug","(pitch,roll,yaw) = (" + pitch_s + ", " + roll_s + ", " + yaw_s );
-            } catch (IOException e) {
-                Log.d("debug","pitch, roll, yaw出力不可");
-                e.printStackTrace();
-            }
 
             // 写真切り抜きタスク実行
             InstakePhotos instakePhotos = new InstakePhotos();
@@ -564,58 +494,40 @@ public class TakePhotoActivity extends Activity {
             return null;
         }
 
-        public String getfilename(String fileId){
-            String[] list = fileId.split("/",0);
-            String fname = list[list.length-1];
-            return fname;
+        @Override
+        protected void onPostExecute(Void  v)  {
+            Toast toast = Toast.makeText(TakePhotoActivity.this, "Complete Store Files", Toast.LENGTH_LONG);
+            toast.show();
         }
 
-        public ArrayList<Long> getPitchRollYaw(String infofile) {
-
-            ArrayList<Long> PitchRollYaw = new ArrayList<Long>(3);
-
-
-
-            return PitchRollYaw;
-        };
     }
 
     private class InstakePhotos extends AsyncTask<String, Object, Void> {
 
         @Override
-        protected Void doInBackground(String... fileId) {
+        protected Void doInBackground(String... fileId) { // fileId: /***/image/image360/image360_R0001275.JPG
             Log.d("debug","*** Start instakePhotos Task ***");
             Log.d("debug",fileId[0]);
 
-            // 360度画像　読み出し
-            String image360_fname = getfilename(fileId[0]);
-            Log.d("debug",image360_fname);
-            image360_fname = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/image360/image360_" + image360_fname;
-            Log.d("debug",image360_fname);
+            MyFileAccess myFileAccess = new MyFileAccess(fileId[0]);
 
-            File image360_file = new File(image360_fname);
-            byte[] byteArray = convertFile(image360_file);
-            Log.d("debug","Load convert file");
-            Log.d("debug",Integer.toString(byteArray.length));
-            Bitmap image360_bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            Log.d("debug","Complete Load file");
+            // 360画像読み出し
+            Bitmap image360_bitmap = myFileAccess.getBitmapImage360();
+            Log.d("debug","Complete image360 Bitmap :" + myFileAccess.image360);
 
-            //画像のpitch,roll,yawを取得する
-            String info_image360_fname = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/info/info_" + getfilename(fileId[0]);
-            info_image360_fname = info_image360_fname.substring(0,info_image360_fname.length()-3) + "txt";
-            Log.d("debug",info_image360_fname);
-            double[] pitch_roll_yaw = readFileTodoubles(info_image360_fname);
+            // pitch,roll,yaw情報取得
+            double[] pitch_roll_yaw = myFileAccess.getImageInfo();
 
             // 2D画像切り取り
             CuttingImage cutter = new CuttingImage();
-            ArrayList<Bitmap> image2d_bitmap_a = new ArrayList<Bitmap>();
+            ArrayList<Bitmap> image2d_bitmap_a;
 
-            //image2d_bitmap_a = cutter.cut(image360_bitmap,pitch_roll_yaw,1.0,1.0,2 * Math.PI / 10,Math.PI /2/4);
             image2d_bitmap_a = cutter.cut(image360_bitmap, pitch_roll_yaw,0.5, 0.5, 0,null,150);
             Log.d("debug","Complete cut image");
 
+
             //TODO 上位何個を出力するか定数として一か所で定義するか検討
-            int output_num = 5;
+            int output_num = 3; //<変更>
 
             //TODO モデル読み込みは事前の実施が可能(位置変更可)
             //モデル読み込み
@@ -625,7 +537,7 @@ public class TakePhotoActivity extends Activity {
             //TODO ビットマップの数と合わせる
             //切り取った画像を認識してinstabaeを抽出(resultsに代入)
             for(int i = 0; i < image2d_bitmap_a.size(); i++){
-               myTensorFlow.startRecognition(image2d_bitmap_a.get(i), Integer.toString(i));
+                myTensorFlow.startRecognition(image2d_bitmap_a.get(i), Integer.toString(i));
             }
 
             //resultsを認識率の高い順にソート
@@ -640,17 +552,13 @@ public class TakePhotoActivity extends Activity {
                 output_photos_human.add(Integer.parseInt(myTensorFlow.results_human.get(i).getImageId()));
             }
 
-
-            //TODO 上記2種類のoutputがfood、humanに対応．以下で保存と表示が必要．(今は暫定)
-            ArrayList<Integer> output_photos = new ArrayList();
+            //上で分かった識別率の高い画像だけ画質を上げる　
             for(int i = 0; i < output_num; i++){
-                output_photos.add(output_photos_food.get(i));
-            }
+                image2d_bitmap_a.set( output_photos_food.get(i),
+                        cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos_food.get(i)));
+                image2d_bitmap_a.set( output_photos_human.get(i),
+                        cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos_human.get(i)));
 
-            //上で分かった識別率の高い画像だけ画質を上げる
-            for(int i = 0; i < output_num; i++){
-                image2d_bitmap_a.set( output_photos.get(i),
-                        cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos.get(i)));
             }
 
             //モデルクローズ
@@ -658,120 +566,27 @@ public class TakePhotoActivity extends Activity {
 
             Log.d("debug","Complete cut image");
 
-            // 2D画像保存先フォルダ
-            String status = Environment.getExternalStorageState();
-            // dir 生成
-            String image2dPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/image2d/" + getfilename(fileId[0]);
-            image2dPath = image2dPath.substring(0,image2dPath.length()-4);
-            Log.d("debug","2d写真保存先："+image2dPath);
-            File image2dDir = new File(image2dPath);
-            if(status.equals(Environment.MEDIA_MOUNTED)){
-                //ディレクトリがなければ作成する
-                if(!image2dDir.exists()){
-                    image2dDir.mkdir();
-                }
-            }else{
-                Log.d("debug","外部ストレージなし");
-                return null;
+            // Human 2D画像保存
+            for(int index : output_photos_human) {
+                File image2d_human = new File(myFileAccess.image2D + "/image2d_human_" +Integer.toString(index) + myFileAccess.fileid + ".JPG");
+                myFileAccess.storeImage2D(image2d_bitmap_a.get(index),image2d_human);
             }
 
-            //2D画像の保存
-            for(int index : output_photos) {
-                String image2d_fname = image2dDir.getAbsolutePath() + "/image2d_" +Integer.toString(index)+ getfilename(fileId[0]);
-                File image2d_file = new File(image2d_fname);
-                try {
-                    FileOutputStream outstream = new FileOutputStream(image2d_file);
-                    image2d_bitmap_a.get(index).compress(Bitmap.CompressFormat.JPEG, 100, outstream);
-                    outstream.flush();//ファイルとして出力
-                    outstream.close();//使ったらすぐに閉じる
-                    Log.d("debug", "2D画像保存完了:" + image2d_file);
-                } catch (IOException ie) {
-                    Log.d("debug", "2D画像保存不可");
-                }
-            }
-
-            //球のサムネイル画像用のディレクトリを生成
-            String thumbnailcirclePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/thumbnailcircle/";
-            File thumbnailcircleDir = new File(thumbnailcirclePath);
-            if(status.equals(Environment.MEDIA_MOUNTED)){
-                //ディレクトリがなければ作成する
-                if(!thumbnailcircleDir.exists()){
-                    thumbnailcircleDir.mkdir();
-                }
-            }else{
-                Log.d("debug","外部ストレージなし");
-                return null;
-            }
-
-            //球サムネイル画像の保存
-            String thumbnailcircle_fname = thumbnailcircleDir.getAbsolutePath() + "/thumbnailcircle_" + getfilename(fileId[0]);
-            File thumbnailcircle_file = new File(thumbnailcircle_fname);
-            try {
-                FileOutputStream outstream = new FileOutputStream(thumbnailcircle_file);
-                cutter.ball_cut(image360_bitmap,150,pitch_roll_yaw).compress(Bitmap.CompressFormat.JPEG, 100, outstream);
-                outstream.flush();//ファイルとして出力
-                outstream.close();//使ったらすぐに閉じる
-                Log.d("debug", "球状のサムネイル画像を保存画像保存完了:" + thumbnailcircle_file);
-            } catch (IOException ie) {
-                Log.d("debug", "球場のサムネイル画像保存不可");
+            // Food 2D画像保存
+            for(int index : output_photos_food) {
+                File image2d_food = new File(myFileAccess.image2D + "/image2d_food_" +Integer.toString(index) + myFileAccess.fileid + ".JPG");
+                myFileAccess.storeImage2D(image2d_bitmap_a.get(index),image2d_food);
             }
 
             Log.d("debug", "*** END instakePhotos Task ***");
             return null;
         }
 
-        //pitch,roll,yawのデータ読み込み用
-        public double[] readFileTodoubles(String filePath) {
-            FileReader fr = null;
-            BufferedReader br = null;
-            double[] res = new double[3];
-            try {
-                fr = new FileReader(filePath);
-                br = new BufferedReader(fr);
 
-                String line;
-                for (int i=0; i<3; i++) {
-                    if((line = br.readLine()) != null) {
-                        res[i] = Double.parseDouble(line);
-                    }else{
-                        Log.d("debug","pitch,roll,yawファイルが壊れています。");
-                    }
-                }
-                br.close();
-                fr.close();
-                return res;
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        public String getfilename(String fileId){
-
-            String[] list = fileId.split("/",0);
-            String fname = list[list.length-1];
-            return fname;
-        }
-
-        public byte[] convertFile(File file) {
-            try (FileInputStream inputStream = new FileInputStream(file);) {
-                ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                while(true) {
-                    int len = inputStream.read(buffer);
-                    if(len < 0) {
-                        break;
-                    }
-                    bout.write(buffer, 0, len);
-                }
-                return bout.toByteArray();
-            } catch (Exception e) {
-                Log.d("debug","CANNOT OPEN FILE:"+file.getAbsolutePath());
-                e.printStackTrace();
-            }
-            return null;
+        @Override
+        protected void onPostExecute(Void  v)  {
+            Toast toast = Toast.makeText(TakePhotoActivity.this, "Complete instakePhotos", Toast.LENGTH_LONG);
+            toast.show();
         }
     }
 
@@ -917,6 +732,8 @@ public class TakePhotoActivity extends Activity {
             }
         }
     }
+
+
     public class MyTensorFlow {
         // These are the settings for the original v1 Inception model. If you want to
         // use a model that's been produced from the TensorFlow for Poets codelab,
