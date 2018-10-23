@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.theta360.sample.v2.glview.GLPhotoView;
 import com.theta360.sample.v2.model.Photo;
@@ -37,6 +38,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import javax.microedition.khronos.opengles.GL;
 
 
 /**
@@ -199,16 +202,6 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
             this.fileId = fileId;
         }
 
-        public String getfilename(){
-            Log.d("debug","start getfilename");
-            Log.d("debug",fileId);
-            //String[] list = fileId.split("/",0);
-            //String fname = list[list.length-1];
-            String fname = fileId.substring(fileId.length()-12);
-            Log.d("debug",fname);
-            return fname;
-        }
-
         @Override
         protected void onPreExecute() {
             progressBar.setVisibility(View.VISIBLE);
@@ -216,88 +209,25 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
 
         @Override
         protected ImageData doInBackground(Void... params) {
-            try {
-                Log.d("debug","*** Start LoadPhotoTask ***");
-                String rawPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/image360/";
-                Log.d("debug",rawPath);
-                String infoPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/info/";
-                Log.d("debug",infoPath);
-                String raw_fname = rawPath + "image360_" + getfilename();
-                Log.d("debug",raw_fname);
-                String info_fname = infoPath + "info_"+ getfilename();
-                info_fname = info_fname.substring(0,info_fname.length()-3) + "txt";
-                Log.d("debug",info_fname);
 
-                // byte[] mRowDataをファイル入力
-                ImageData resizedImageData = new ImageData();
-                resizedImageData.setRawData(convertFile(new File(raw_fname)));
-                Log.d("debug","End setRawData");
+            Log.d("debug","*** Start LoadPhotoTask ***");
+            MyFileAccess myFileAccess = new MyFileAccess(fileId);
 
-                // double pitch, roll, yaw をファイル入力
-                double[] pitch_roll_yaw = readFileTodoubles(info_fname);
-                resizedImageData.setPitch(pitch_roll_yaw[0]);
-                resizedImageData.setRoll(pitch_roll_yaw[1]);
-                resizedImageData.setYaw(pitch_roll_yaw[2]);
-                Log.d("debug",resizedImageData.getPitch().toString());
-                Log.d("debug",resizedImageData.getRoll().toString());
-                Log.d("debug",resizedImageData.getYaw().toString());
-                Log.d("debug","End setPitch,Roll,Yaw");
+            // byte[] mRowDataをファイル入力
+            ImageData resizedImageData = new ImageData();
+            resizedImageData.setRawData(myFileAccess.getImage360ByteArray());
+            Log.d("debug","End setRawData");
 
-                return resizedImageData;
+            // double pitch, roll, yaw をファイル入力
+            double[] pry = myFileAccess.getImageInfo();
+            resizedImageData.setPitch(pry[0]);
+            resizedImageData.setRoll(pry[1]);
+            resizedImageData.setYaw(pry[2]);
+            Log.d("debug","End setPitch,Roll,Yaw");
 
-            } catch (Throwable throwable) {
-                String errorLog = Log.getStackTraceString(throwable);
-                publishProgress(errorLog);
-                return null;
-            }
+            return resizedImageData;
         }
 
-        public byte[] convertFile(File file) {
-            try (FileInputStream inputStream = new FileInputStream(file);) {
-                ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                while(true) {
-                    int len = inputStream.read(buffer);
-                    if(len < 0) {
-                        break;
-                    }
-                    bout.write(buffer, 0, len);
-                }
-                Log.d("debug","END OPEN FILE:"+file.getAbsolutePath());
-                return bout.toByteArray();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d("debug","CANNOT OPEN FILE:"+file.getAbsolutePath());
-            }
-            return null;
-        }
-
-        public double[] readFileTodoubles(String filePath) {
-            FileReader fr = null;
-            BufferedReader br = null;
-            double[] res = new double[3];
-            try {
-                fr = new FileReader(filePath);
-                br = new BufferedReader(fr);
-
-                String line;
-                for (int i=0; i<3; i++) {
-                    if((line = br.readLine()) != null) {
-                        res[i] = Double.parseDouble(line);
-                    }else{
-                        Log.d("debug","pitch,roll,yawファイルが壊れています。");
-                    }
-                }
-                br.close();
-                fr.close();
-                return res;
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
         @Override
         protected void onProgressUpdate(Object... values) {
             for (Object param : values) {
@@ -316,11 +246,13 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
                 byte[] dataObject = imageData.getRawData();
 
                 if (dataObject == null) {
-                  //  logViewer.append("failed to download image");
+                  Log.d("debug","Image360 cannot Load");
                     return;
                 }
 
-                Bitmap __bitmap = BitmapFactory.decodeByteArray(dataObject, 0, dataObject.length);
+                MyFileAccess myFileAccess = new MyFileAccess(fileId);
+
+                Bitmap __bitmap = myFileAccess.getBitmapImage360();//BitmapFactory.decodeByteArray(dataObject, 0, dataObject.length);
 
                 progressBar.setVisibility(View.GONE);
 
@@ -332,6 +264,9 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
                 mTexture = new Photo(__bitmap, yaw, pitch, roll);
                 if (null != mGLPhotoView) {
                     mGLPhotoView.setTexture(mTexture);
+                    Log.d("debug","Complete Load Task");
+                    Toast toast = Toast.makeText(GLPhotoActivity.this, "Complete Load Task", Toast.LENGTH_LONG);
+                    toast.show();
                 }
             } else {
             //    logViewer.append("failed to download image");
@@ -366,4 +301,5 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
         intent.putExtra(THUMBNAIL, thumbnail);
         activity.startActivityForResult(intent, requestCode);
     }
+
 }

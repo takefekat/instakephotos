@@ -190,7 +190,6 @@ public class MyFileAccess {
         return null;
     }
 
-
     public void storeImage2D(Bitmap image2D_btmp, File filename){
         Log.d("debug",  "2D画像file名：" + filename );
         try {
@@ -268,6 +267,10 @@ public class MyFileAccess {
     }
 
     public byte[] getThumbnailByteArray(){
+        return convertFile(thumbnail);
+    }
+
+    public byte[] getImage360ByteArray(){
         return convertFile(thumbnail);
     }
 
