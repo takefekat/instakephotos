@@ -67,6 +67,22 @@ public class MyFileAccess {
             Log.d("debug","fileIdが設定されていません。:ExistAllFiles()");
             AllFileExists = false;
         }else {
+            if (!imageinfo.exists()) {
+                Log.d("debug", "info file Not Exists.:ExistAllFiles()");
+                //AllFileExists = false;
+
+                try {
+                    Log.d("debug", "info file作成:" + imageinfo);
+                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(imageinfo)));
+                    pw.println(0.0);
+                    pw.println(0.0);
+                    pw.println(0.0);
+                    pw.close();
+                } catch (IOException e) {
+                    Log.d("debug", "infoファイルを作成できません。");
+                    e.printStackTrace();
+                }
+            }
 
             if (!thumbnail.exists()) {
                 Log.d("debug", "thumbnail file Not Exists.:" + thumbnail);
@@ -131,22 +147,7 @@ public class MyFileAccess {
             }
             // TODO image2d/内に切り取られた画像が存在するか確認する
 
-            if (!imageinfo.exists()) {
-                Log.d("debug", "info file Not Exists.:ExistAllFiles()");
-                //AllFileExists = false;
 
-                try {
-                    Log.d("debug", "info file作成:" + imageinfo);
-                    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(imageinfo)));
-                    pw.println(0.0);
-                    pw.println(0.0);
-                    pw.println(0.0);
-                    pw.close();
-                } catch (IOException e) {
-                    Log.d("debug", "infoファイルを作成できません。");
-                    e.printStackTrace();
-                }
-            }
         }
 
         return AllFileExists;
