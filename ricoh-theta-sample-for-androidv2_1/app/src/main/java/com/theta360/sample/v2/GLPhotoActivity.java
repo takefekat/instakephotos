@@ -71,26 +71,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_glphoto);
 
-        Intent intent = getIntent();
-        String cameraIpAddress = intent.getStringExtra(CAMERA_IP_ADDRESS);
-        String fileId = intent.getStringExtra(OBJECT_ID);
 
-        MyFileAccess myFileAccess = new MyFileAccess(fileId);
-        //byte[] byteThumbnail = intent.getByteArrayExtra(THUMBNAIL);
-        byte[] byteThumbnail = myFileAccess.getThumbnailByteArray();
-        Log.d("debug",Integer.toString(byteThumbnail.length ));
-
-        ByteArrayInputStream inputStreamThumbnail = new ByteArrayInputStream(byteThumbnail);
-        Drawable thumbnail = BitmapDrawable.createFromStream(inputStreamThumbnail, null);
-
-        Photo _thumbnail = new Photo(((BitmapDrawable)thumbnail).getBitmap());
-
-        mGLPhotoView = (GLPhotoView) findViewById(R.id.photo_image);
-        mGLPhotoView.setTexture(_thumbnail);
-        mGLPhotoView.setmRotateInertia(mRotateInertia);
-
-        mLoadPhotoTask = new LoadPhotoTask(cameraIpAddress, fileId);
-        mLoadPhotoTask.execute();
     }
 
     @Override
@@ -154,6 +135,28 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
     @Override
     protected void onResume() {
         super.onResume();
+
+        Intent intent = getIntent();
+        String cameraIpAddress = intent.getStringExtra(CAMERA_IP_ADDRESS);
+        String fileId = intent.getStringExtra(OBJECT_ID);
+
+        MyFileAccess myFileAccess = new MyFileAccess(fileId);
+        //byte[] byteThumbnail = intent.getByteArrayExtra(THUMBNAIL);
+        byte[] byteThumbnail = myFileAccess.getThumbnailByteArray();
+        //Log.d("debug",Integer.toString(byteThumbnail.length ));
+
+        ByteArrayInputStream inputStreamThumbnail = new ByteArrayInputStream(byteThumbnail);
+        Drawable thumbnail = BitmapDrawable.createFromStream(inputStreamThumbnail, null);
+
+        Photo _thumbnail = new Photo(((BitmapDrawable)thumbnail).getBitmap());
+
+        mGLPhotoView = (GLPhotoView) findViewById(R.id.photo_image);
+        mGLPhotoView.setTexture(_thumbnail);
+        mGLPhotoView.setmRotateInertia(mRotateInertia);
+
+        mLoadPhotoTask = new LoadPhotoTask(cameraIpAddress, fileId);
+        mLoadPhotoTask.execute();
+
         mGLPhotoView.onResume();
 
         if (null != mTexture) {

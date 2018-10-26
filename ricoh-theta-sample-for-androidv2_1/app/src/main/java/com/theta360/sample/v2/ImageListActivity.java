@@ -68,7 +68,7 @@ public class ImageListActivity extends Activity {
 
 		//サムネ画像取得（球体版優先）
 
-		final ArrayList<File> thumbnailList = myFolderAccess.getThumbnailFileList();
+		 final ArrayList<File> thumbnailList = myFolderAccess.getThumbnailFileList();
 
 		// GridViewのインスタンスを生成
 		GridView gridview = (GridView) findViewById(R.id.gridview2);
@@ -90,25 +90,48 @@ public class ImageListActivity extends Activity {
 		gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				cameraIpAddress = getResources().getString(R.string.theta_ip_address);
-				//MyFileAccess myFileAccess = new MyFileAccess(thumbnailList.get(position).getName());
-				//fileId = myFileAccess.image360.getAbsolutePath();
-				//thumbnail = convertFile(thumbnailList.get(position));
-				//Log.d("debug","ImageListActivity-->GLPhotoActivity" + Integer.toString(position) +" "+fileId);
-				//GLPhotoActivity.startActivityForResult(ImageListActivity.this, cameraIpAddress, fileId, thumbnail, false);
-
-				Log.d("debug","ImageListActivity-->GLPhotoActivity" + Integer.toString(position) +" "+fileId);
 				MyFileAccess myFileAccess = new MyFileAccess(thumbnailList.get(position).getName());
-				Intent intent = new Intent(getApplication(), GLPhotoActivity.class);
 
+				Log.d("debug","ImageListActivity-->GLPhotoActivity" + Integer.toString(position) +" "+myFileAccess.fileid);
+
+				// Activity 遷移
+				Intent intent = new Intent(getApplication(), GLPhotoActivity.class);
 				intent.putExtra("CAMERA_IP_ADDRESS", cameraIpAddress);
 				intent.putExtra("OBJECT_ID",myFileAccess.fileid);
 				intent.putExtra("THUMBNAIL",myFileAccess.getThumbnailByteArray());
-
 				startActivity(intent);
-
-
 			}
 		});
+
+
+        gridview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                new AlertDialog.Builder(ImageListActivity.this )
+                        .setTitle("CAUTION !")
+                        .setMessage("画像を削除しますか？")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // OK button pressed
+                                //ここでListからタップされた情報を取得したいparent.getItemAtPositionなど。
+                                MyFileAccess myFileAccess = new MyFileAccess(thumbnailList.get(position).getName());
+                                if(myFileAccess.deleteAll()){
+                                    Log.d("debug","Cannot delete file: " + myFileAccess.fileid);
+                                }
+
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+
+                Toast toast = Toast.makeText(getApplicationContext(), "長押しされました: "+ position  , Toast.LENGTH_LONG);
+                toast.show();
+
+                return true;
+            }
+        });
+
 	}
 
 	private void checkFolder(){
@@ -336,6 +359,12 @@ public class ImageListActivity extends Activity {
 	}
 
 	private class InstakePhotos extends AsyncTask<String, Object, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            Toast toast = Toast.makeText(getApplicationContext(), "Start instakePhotos !", Toast.LENGTH_LONG);
+            toast.show();
+        }
 
 		@Override
 		protected Void doInBackground(String... fileId) { // fileId: /***/image/image360/image360_R0001275.JPG

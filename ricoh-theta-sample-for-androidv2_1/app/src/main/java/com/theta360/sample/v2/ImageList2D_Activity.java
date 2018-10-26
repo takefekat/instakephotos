@@ -81,12 +81,7 @@ public class ImageList2D_Activity extends Activity {
 
 
     }
-    public String getfilename(String fileId){
 
-        String[] list = fileId.split("/",0);
-        String fname = list[list.length-1];
-        return fname;
-    }
     public byte[] convertFile(File file) {
         try (FileInputStream inputStream = new FileInputStream(file);) {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();

@@ -100,7 +100,7 @@ public class MyFileAccess {
                 int scaleH = options.outHeight / 96 + 1;
                 int scale = Math.max(scaleW, scaleH);
                 options.inJustDecodeBounds = false;
-                options.inSampleSize = scale;
+                options.inSampleSize = 30;
                 thumbnail_btmp = BitmapFactory.decodeFile(image360.getAbsolutePath(), options);
 
                 //Log.d("debug", Integer.toString(thumbnail_btmp.getByteCount()));
@@ -215,6 +215,20 @@ public class MyFileAccess {
         }
     }
 
+    public void storeThumbnail(){
+        Log.d("debug",  "2D画像file名：" + thumbnail );
+        try {
+            Bitmap btmp = getBitmapImage360();
+
+            FileOutputStream outstream = new FileOutputStream(thumbnail);
+            btmp.compress(Bitmap.CompressFormat.JPEG, 100, outstream);
+            outstream.flush();//ファイルとして出力
+            outstream.close();//使ったらすぐに閉じる
+        } catch (IOException ie) {
+            Log.d("debug", "2D画像保存不可");
+        }
+    }
+
     public void storeImage360(Bitmap btmp){
         Log.d("debug",  "2D画像file名：" + image360 );
         try {
@@ -252,6 +266,32 @@ public class MyFileAccess {
         }
     }
 
+    public void mkdirImage2D(){
+        if (!image2D.exists()) {
+            image2D.mkdir();
+        }
+    }
+
+    public boolean deleteAll(){
+        boolean isDelete = true;
+        if(!thumbnail.delete()){
+            isDelete = false;
+        }
+        if(thumbnailcircle.delete()){
+            isDelete = false;
+        }
+        if(imageinfo.delete()){
+            isDelete = false;
+        }
+        if(image360.delete()){
+            isDelete = false;
+        }
+        if(image2D.delete()){
+            isDelete = false;
+        }
+        return isDelete;
+    }
+
     // image360フォルダの全ファイルをリストで返す
     public ArrayList<File> getImage2DFileList(){
 
@@ -268,6 +308,10 @@ public class MyFileAccess {
     }
 
     public byte[] getThumbnailByteArray(){
+        if(!thumbnail.exists()) {
+            Log.d("debug","No Exsit thumbnail: " + thumbnail);
+            storeThumbnail();
+        }
         return convertFile(thumbnail);
     }
 
@@ -284,6 +328,7 @@ public class MyFileAccess {
         int R_index = str.lastIndexOf("R");
         return str.substring(R_index,R_index+8);
     }
+
     private byte[] convertFile(File file) {
         try (FileInputStream inputStream = new FileInputStream(file);) {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();

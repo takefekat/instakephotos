@@ -103,6 +103,8 @@ public class TakePhotoActivity extends Activity {
             }
         });
 
+
+
         mMv = (MJpegView) findViewById(R.id.live_view);
 
         forceConnectToWifi();
@@ -430,9 +432,30 @@ public class TakePhotoActivity extends Activity {
                 thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] thumbnailImage = baos.toByteArray();
 
-                // サムネイル、360画像の保存
-                StoreFileTask storeFileTask = new StoreFileTask();
-                storeFileTask.execute(fileId);
+                //360画像の保存
+                ImageData imageData = camera.getImage(fileId, new HttpDownloadListener() {
+                    @Override
+                    public void onTotalSize(long totalSize) {
+                    }
+                    @Override
+                    public void onDataReceived(int size) {
+                    }
+                });
+
+                // 360°画像の保存
+                MyFileAccess myFileAccess = new MyFileAccess(fileId);
+                Bitmap image360 = BitmapFactory.decodeByteArray(imageData.getRawData(), 0, imageData.getRawData().length);
+                myFileAccess.storeImage360(image360);
+
+                // サムネイル画像の保存
+                myFileAccess.storeThumbnail(thumbnail);
+
+                // pitch,roll,yawの保存
+                myFileAccess.storeInfo(imageData.getPitch(),imageData.getRoll(),imageData.getYaw());
+
+                // 写真切り抜きタスク実行
+                InstakePhotos instakePhotos = new InstakePhotos();
+                instakePhotos.execute(fileId);
 
                 GLPhotoActivity.startActivityForResult(TakePhotoActivity.this, cameraIpAddress, fileId, thumbnailImage, true);
             } else {
@@ -487,9 +510,7 @@ public class TakePhotoActivity extends Activity {
             myFileAccess.storeInfo(imageData.getPitch(),imageData.getRoll(),imageData.getYaw());
 
 
-            // 写真切り抜きタスク実行
-            InstakePhotos instakePhotos = new InstakePhotos();
-            instakePhotos.execute(fileId[0]);
+
 
             return null;
         }
@@ -503,6 +524,12 @@ public class TakePhotoActivity extends Activity {
     }
 
     private class InstakePhotos extends AsyncTask<String, Object, Void> {
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
 
         @Override
         protected Void doInBackground(String... fileId) { // fileId: /***/image/image360/image360_R0001275.JPG
@@ -551,6 +578,8 @@ public class TakePhotoActivity extends Activity {
                 output_photos_food.add(Integer.parseInt(myTensorFlow.results_food.get(i).getImageId()));
                 output_photos_human.add(Integer.parseInt(myTensorFlow.results_human.get(i).getImageId()));
             }
+            //モデルクローズ
+            myTensorFlow.endRecognition();
 
             //上で分かった識別率の高い画像だけ画質を上げる　
             for(int i = 0; i < output_num; i++){
@@ -560,12 +589,9 @@ public class TakePhotoActivity extends Activity {
                         cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos_human.get(i)));
 
             }
-
-            //モデルクローズ
-            myTensorFlow.endRecognition();
-
             Log.d("debug","Complete cut image");
 
+            myFileAccess.mkdirImage2D();
             // Human 2D画像保存
             for(int index : output_photos_human) {
                 File image2d_human = new File(myFileAccess.image2D + "/image2d_human_" +Integer.toString(index) + myFileAccess.fileid + ".JPG");
@@ -585,7 +611,7 @@ public class TakePhotoActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void  v)  {
-            Toast toast = Toast.makeText(TakePhotoActivity.this, "Complete instakePhotos", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(getApplicationContext(), "Complete instakePhotos", Toast.LENGTH_LONG);
             toast.show();
         }
     }
