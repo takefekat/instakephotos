@@ -195,6 +195,8 @@ public class TakePhotoActivity extends Activity {
                         getImageSizeTask.execute();
                     }
 
+
+
                 } else {
                     layoutCameraArea.setVisibility(View.INVISIBLE);
 /*
@@ -424,6 +426,7 @@ public class TakePhotoActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... params) {
+            Log.d("debug","*** Start GetThumbnailTask *** ");
             HttpConnector camera = new HttpConnector(getResources().getString(R.string.theta_ip_address));
             Bitmap thumbnail = camera.getThumb(fileId);
             if (thumbnail != null) {
@@ -443,6 +446,8 @@ public class TakePhotoActivity extends Activity {
 
                 // 360°画像の保存
                 MyFileAccess myFileAccess = new MyFileAccess(fileId);
+                myFileAccess.mkdirImage2D();
+
                 Bitmap image360 = BitmapFactory.decodeByteArray(imageData.getRawData(), 0, imageData.getRawData().length);
                 myFileAccess.storeImage360(image360);
 
@@ -460,6 +465,7 @@ public class TakePhotoActivity extends Activity {
             } else {
                 publishProgress("failed to get file data.");
             }
+            Log.d("debug","*** End GetThumbnailTask *** ");
             return null;
         }
 
