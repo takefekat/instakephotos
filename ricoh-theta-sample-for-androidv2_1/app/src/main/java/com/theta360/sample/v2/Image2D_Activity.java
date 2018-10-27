@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -117,6 +118,10 @@ public class Image2D_Activity extends Activity {
         Log.d("debug","Bit map #Byte :" + Integer.toString(bmp.getByteCount()));
         mContentView.setImageBitmap(bmp);
         Log.d("debug","setImageBitmap Complete");
+
+
+        Toast toast = Toast.makeText(getApplication(), "File Name:"+filepath, Toast.LENGTH_LONG);
+        toast.show();
 
 
         // Set up the user interaction to manually show or hide the system UI.

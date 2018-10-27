@@ -322,6 +322,30 @@ public class MyFileAccess {
         return convertFile(thumbnail);
     }
 
+    public ArrayList<File> getHumanImage2D(){
+        ArrayList<File> humanImage2DList = new ArrayList<File>(0);
+
+        File[] fileArray = image2D.listFiles();
+        for (File image2dfile : fileArray) {
+            if(image2dfile.getName().indexOf("human") != -1){
+                humanImage2DList.add(image2dfile);
+            }
+        }
+        return  humanImage2DList;
+    }
+
+    public ArrayList<File> getFoodImage2D(){
+        ArrayList<File> foodImage2DList = new ArrayList<File>(0);
+
+        File[] fileArray = image2D.listFiles();
+        for (File image2dfile : fileArray) {
+            if(image2dfile.getName().indexOf("food") != -1){
+                foodImage2DList.add(image2dfile);
+            }
+        }
+        return  foodImage2DList;
+    }
+
     /**********************************/
     /*****    private method      *****/
     /**********************************/

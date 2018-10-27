@@ -34,16 +34,13 @@ public class ImageList2D_Activity extends Activity {
         MyFileAccess myFileAccess = new MyFileAccess(fileId);
         Log.d("debug","2D画像保存先 = "+ myFileAccess.image2D);
 
-        final File[] _files = new File(myFileAccess.image2D.getAbsolutePath()).listFiles();
-        ArrayList<File> files = new ArrayList<File>();
+        final ArrayList<File> image2DFiles = new ArrayList<File>();
 
-        Log.d("debug","2D image数 = "+Integer.toString(_files.length));
-        for (int i=0; i<_files.length; i++) {
-            if(_files[i].isFile()) {
-                files.add(_files[i]);
-                members[i] = _files[i].getName();
-                Log.d("debug",_files[i].getName());
-            }
+        ArrayList<File> foodImage2DList = myFileAccess.getFoodImage2D();
+        ArrayList<File> humanImage2DList = myFileAccess.getHumanImage2D();
+        for(int i = 0; i<foodImage2DList.size(); i++){
+            image2DFiles.add(humanImage2DList.get(i));
+            image2DFiles.add(foodImage2DList.get(i));
         }
 
         // GridViewのインスタンスを生成
@@ -54,7 +51,7 @@ public class ImageList2D_Activity extends Activity {
         //表示する画像を取得
         ArrayList<Bitmap> lstBitmap = new ArrayList<Bitmap>();
 
-        for(File file: files) {
+        for(File file: image2DFiles) {
             byte[] byteArray = convertFile(file);
             lstBitmap.add(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length));
         }
@@ -69,8 +66,8 @@ public class ImageList2D_Activity extends Activity {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplication(), Image2D_Activity.class);
-                intent.putExtra("filepath",_files[position].getAbsolutePath());
-                Log.d("debug",_files[position].getAbsolutePath());
+                intent.putExtra("filepath",image2DFiles.get(position).getAbsolutePath());
+                Log.d("debug",image2DFiles.get(position).getAbsolutePath());
                 startActivity(intent);
             }
         });
