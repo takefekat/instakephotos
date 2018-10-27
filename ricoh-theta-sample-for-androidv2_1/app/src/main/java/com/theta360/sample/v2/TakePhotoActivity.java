@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
@@ -56,7 +57,10 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EventListener;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Activity that displays the photo list
@@ -72,7 +76,7 @@ public class TakePhotoActivity extends Activity {
     private ImageSize currentImageSize;
     private MJpegView mMv;
     private boolean mConnectionSwitchEnabled = false;
-
+    final Handler handler = new Handler();
     //private LoadObjectListTask sampleTask = null;
     private ShowLiveViewTask livePreviewTask = null;
     private GetImageSizeTask getImageSizeTask = null;
@@ -99,11 +103,10 @@ public class TakePhotoActivity extends Activity {
             public void onClick(View v) {
                 btnShoot.setEnabled(false);
                 textCameraStatus.setText(R.string.text_camera_synthesizing);
+
                 new ShootTask().execute();
             }
         });
-
-
 
         mMv = (MJpegView) findViewById(R.id.live_view);
 
@@ -169,14 +172,10 @@ public class TakePhotoActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.connection, menu);
 
-
         Switch connectionSwitch = (Switch) menu.findItem(R.id.connection).getActionView().findViewById(R.id.connection_switch);
         connectionSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //objectList = (ListView) findViewById(R.id.object_list);
-                //ImageListArrayAdapter empty = new ImageListArrayAdapter(TakePhotoActivity.this, R.layout.listlayout_object, new ArrayList<ImageRow>());
-                //objectList.setAdapter(empty);
 
                 if (isChecked) {
                     layoutCameraArea.setVisibility(View.VISIBLE);
@@ -195,6 +194,7 @@ public class TakePhotoActivity extends Activity {
                         getImageSizeTask = new GetImageSizeTask();
                         getImageSizeTask.execute();
                     }
+
                 } else {
                     layoutCameraArea.setVisibility(View.INVISIBLE);
 /*
@@ -261,7 +261,6 @@ public class TakePhotoActivity extends Activity {
             }
         }
     }
-
 
     private class ShowLiveViewTask extends AsyncTask<String, String, MJpegInputStream> {
         @Override
@@ -759,7 +758,6 @@ public class TakePhotoActivity extends Activity {
         }
     }
 
-
     public class MyTensorFlow {
         // These are the settings for the original v1 Inception model. If you want to
         // use a model that's been produced from the TensorFlow for Poets codelab,
@@ -924,6 +922,27 @@ public class TakePhotoActivity extends Activity {
             }
 
             return matrix;
+        }
+    }
+
+    public class CheckPhotoTimer extends TimerTask {
+
+        public long numStoredFiles;
+        public HttpConnector httpConnector;
+
+        CheckPhotoTimer(){
+            this.numStoredFiles = httpConnector.getList().size();
+        }
+
+        @Override
+        public void run() {
+            if(numStoredFiles == httpConnector.getList().size()){
+
+            }
+            else{
+                Toast toast = Toast.makeText(getApplication(), "写真が撮影されました！", Toast.LENGTH_LONG);
+                toast.show();
+            }
         }
     }
 }

@@ -31,12 +31,8 @@ public class ImageList2D_Activity extends Activity {
         Intent intent = getIntent();
         final String fileId = intent.getStringExtra("OBJECT_ID");
 
-        //Log.d("debug","2D画像保存先　：　" + fileId);
-
         MyFileAccess myFileAccess = new MyFileAccess(fileId);
-
-
-        Log.d("debug","2D画像保存先 = "+myFileAccess.image2D);
+        Log.d("debug","2D画像保存先 = "+ myFileAccess.image2D);
 
         final File[] _files = new File(myFileAccess.image2D.getAbsolutePath()).listFiles();
         ArrayList<File> files = new ArrayList<File>();

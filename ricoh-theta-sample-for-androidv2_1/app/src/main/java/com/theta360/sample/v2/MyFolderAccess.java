@@ -77,10 +77,13 @@ public class MyFolderAccess {
 
     // image360フォルダの全ファイルをリストで返す
     public ArrayList<File> getImage360FileList(){
-        String storagePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image/image360/";
-        File[] _files = new File(storagePath).listFiles();
-        ArrayList<File> files = new ArrayList<File>();
 
+        File[] _files = image360Dir.listFiles();
+        ArrayList<File> files = new ArrayList<File>(0);
+
+        if(_files == null){
+            return files;
+        }
         for (int i=0; i<_files.length; i++) {
             if(_files[i].isFile()) {
                 Log.d("debug","image/image360に存在するfile "+ Integer.toString(i) +" : " + _files[i]);

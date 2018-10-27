@@ -118,16 +118,10 @@ public class ImageListActivity extends Activity {
                                 if(myFileAccess.deleteAll()){
                                     Log.d("debug","Cannot delete file: " + myFileAccess.fileid);
                                 }
-
-
                             }
                         })
                         .setNegativeButton("Cancel", null)
                         .show();
-
-                Toast toast = Toast.makeText(getApplicationContext(), "長押しされました: "+ position  , Toast.LENGTH_LONG);
-                toast.show();
-
                 return true;
             }
         });

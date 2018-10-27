@@ -153,9 +153,10 @@ public class MyFileAccess {
         return AllFileExists;
     }
 
+
     // fileIdのimage360画像のBitmapを取得
     public Bitmap getBitmapImage360(){
-        if(fileid ==""){
+        if(fileid == ""){
             Log.d("debug","fileIdが設定されていません。:getBitmapimage360()");
             return null;
         }
@@ -204,19 +205,20 @@ public class MyFileAccess {
     }
 
     public void storeThumbnail(Bitmap btmp){
-        Log.d("debug",  "2D画像file名：" + thumbnail );
+
         try {
             FileOutputStream outstream = new FileOutputStream(thumbnail);
             btmp.compress(Bitmap.CompressFormat.JPEG, 100, outstream);
             outstream.flush();//ファイルとして出力
             outstream.close();//使ったらすぐに閉じる
+            Log.d("debug",  "thumbnail 保存完了：" + thumbnail );
         } catch (IOException ie) {
-            Log.d("debug", "2D画像保存不可");
+            Log.d("debug", "Thumbnail 保存不可 : " + thumbnail);
         }
     }
 
     public void storeThumbnail(){
-        Log.d("debug",  "2D画像file名：" + thumbnail );
+        Log.d("debug",  "thumbnail file名：" + thumbnail );
         try {
             Bitmap btmp = getBitmapImage360();
 
@@ -225,19 +227,20 @@ public class MyFileAccess {
             outstream.flush();//ファイルとして出力
             outstream.close();//使ったらすぐに閉じる
         } catch (IOException ie) {
-            Log.d("debug", "2D画像保存不可");
+            Log.d("debug", "thumbnail 保存不可");
         }
     }
 
     public void storeImage360(Bitmap btmp){
-        Log.d("debug",  "2D画像file名：" + image360 );
+
         try {
             FileOutputStream outstream = new FileOutputStream(image360);
             btmp.compress(Bitmap.CompressFormat.JPEG, 100, outstream);
             outstream.flush();//ファイルとして出力
             outstream.close();//使ったらすぐに閉じる
+            Log.d("debug",  "image360 保存：" + image360 );
         } catch (IOException ie) {
-            Log.d("debug", "2D画像保存不可");
+            Log.d("debug", "image360 保存不可");
         }
     }
 
@@ -258,7 +261,7 @@ public class MyFileAccess {
 
             //ファイルを閉じる
             pw.close();
-            Log.d("debug","pitch, roll, yaw:出力完了" + imageinfo);
+            Log.d("debug","pitch, roll, yaw　保存完了" + imageinfo);
             Log.d( "debug","(pitch,roll,yaw) = (" + pitch_s + ", " + roll_s + ", " + yaw_s );
         } catch (IOException e) {
             Log.d("debug","pitch, roll, yaw出力不可");
