@@ -61,7 +61,8 @@ public class CuttingImage {
         double far_length = Math.sqrt(H/2*H/2 + W/2 * W/2);
         //int testtest =0;
 
-        for(beta=-Math.PI/2*2/4; beta < Math.PI/2*3/4 ;beta = beta + beta_bu) {
+
+        for(beta=-Math.PI/2*3/4; beta < Math.PI/2*4/4 ;beta = beta + beta_bu) {
 
             if (beta == -Math.PI / 2 * 2 / 4 || beta == Math.PI / 2 * 2 / 4) {
                 alpha_bu = 2.0 * Math.PI / 6.0;
@@ -72,6 +73,9 @@ public class CuttingImage {
             }else if(beta ==0){
                 alpha_bu = 2 * Math.PI / 12;
                 //Log.i("Debug", "条件3です。");
+            }else if(beta == -Math.PI / 2 * 3 / 4 || beta == Math.PI / 2 * 3 / 4) {
+                alpha_bu = 2 * Math.PI / 3;
+                //Log.i("Debug", "条件4です。");
             }
 
             for (alpha = 0.0; alpha < Math.PI * 2.0*0.99 ; alpha = alpha+alpha_bu ) {
@@ -223,7 +227,11 @@ public class CuttingImage {
                 }else if(beta ==0){
                     alpha_bu = 2 * Math.PI / 12;
                     //Log.i("Debug", "条件3です。");
+                }else if(beta == -Math.PI / 2 * 3 / 4 || beta == Math.PI / 2 * 3 / 4) {
+                    alpha_bu = 2 * Math.PI / 3;
+                    //Log.i("Debug", "条件4です。");
                 }
+
             }
         }
         return Out_bmp;
@@ -258,7 +266,8 @@ public class CuttingImage {
         double far_length = Math.sqrt(H/2*H/2 + W/2 * W/2);
         //int testtest =0;
 
-        for(beta=-Math.PI/2*2/4; beta < Math.PI/2*3/4 ;beta = beta + beta_bu) {
+
+        for(beta=-Math.PI/2*3/4; beta < Math.PI/2*4/4 ;beta = beta + beta_bu) {
 
             if (beta == -Math.PI / 2 * 2 / 4 || beta == Math.PI / 2 * 2 / 4) {
                 alpha_bu = 2.0 * Math.PI / 6.0;
@@ -269,6 +278,9 @@ public class CuttingImage {
             }else if(beta ==0){
                 alpha_bu = 2 * Math.PI / 12;
                 //Log.i("Debug", "条件3です。");
+            }else if(beta == -Math.PI / 2 * 3 / 4 || beta == Math.PI / 2 * 3 / 4) {
+                alpha_bu = 2 * Math.PI / 3;
+                //Log.i("Debug", "条件4です。");
             }
 
             for (alpha = 0.0; alpha < Math.PI * 2.0*0.99 ; alpha = alpha+alpha_bu ) {
@@ -410,7 +422,11 @@ public class CuttingImage {
                 }else if(beta ==0){
                     alpha_bu = 2 * Math.PI / 12;
                     //Log.i("Debug", "条件3です。");
+                }else if(beta == -Math.PI / 2 * 3 / 4 || beta == Math.PI / 2 * 3 / 4) {
+                    alpha_bu = 2 * Math.PI / 3;
+                    //Log.i("Debug", "条件4です。");
                 }
+
             }
         }
         return bmp;
