@@ -346,6 +346,36 @@ public class MyFileAccess {
         return  foodImage2DList;
     }
 
+    public void storeConfidence(float dasafood,
+                                float dasahuman,
+                                float osyafood,
+                                float osyahuman,
+                                float other,
+                                String index){
+        File filename = new File(image2D + "/image2D_" + index + "_" + fileid + ".txt");
+        try {
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
+            pw.println("dasafood " + dasafood);
+            pw.println("dasahuman" + dasahuman);
+            pw.println("osyafood" + osyafood);
+            pw.println("osyahuman" + osyahuman);
+            pw.println("other" + other);
+            pw.close();
+            Log.d("debug", "評価値ファイル保存: " + filename);
+            Log.d("debug","dasafood " + dasafood);
+            Log.d("debug","dasahuman " + dasahuman);
+            Log.d("debug","osyafood " + osyafood);
+            Log.d("debug","osyahuman " + osyahuman);
+            Log.d("debug","other " + other);
+        } catch (IOException e) {
+            Log.d("debug", "評価値ファイルを保存できません。");
+            e.printStackTrace();
+        }
+    }
+
+
+
+
     /**********************************/
     /*****    private method      *****/
     /**********************************/

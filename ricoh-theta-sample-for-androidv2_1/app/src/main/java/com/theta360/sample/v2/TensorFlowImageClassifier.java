@@ -154,7 +154,9 @@ public class TensorFlowImageClassifier implements Classifier {
     //outputsにinstabae,notinstabaeの値が入っている
       ArrayList<Recognition> recognitions = new ArrayList<Recognition>();
       for (int i = 0; i < outputs.length; ++i) {
-          if (labels.get(i).equals("osyafood")||labels.get(i).equals("osyahuman")) {
+          if (labels.get(i).equals("osyafood")||labels.get(i).equals("osyahuman")||
+                  labels.get(i).equals("dasafood")|| labels.get(i).equals("dasahuman")||
+                  labels.get(i).equals("other")) {
               recognitions.add(new Recognition(
                       "" + i, labels.get(i), outputs[i], null, imageId));
           }

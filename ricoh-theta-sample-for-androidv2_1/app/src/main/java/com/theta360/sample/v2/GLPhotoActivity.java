@@ -373,6 +373,69 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
                 output_photos_food.add(Integer.parseInt(myTensorFlow.results_food.get(i).getImageId()));
                 output_photos_human.add(Integer.parseInt(myTensorFlow.results_human.get(i).getImageId()));
             }
+
+            myFileAccess.mkdirImage2D();
+
+            //
+            // debug ここから（評価値ファイル作成）
+            //
+            for(int i=0; i<output_num; i++){
+                String index = myTensorFlow.results_food.get(i).getImageId();
+                Log.d("debug","Food評価値 "+ i + " 番目: No." + index  );
+                float dasafood = 0;
+                float dasahuman = 0;
+                float osyafood = myTensorFlow.results_food.get(i).getConfidence();
+                float osyahuman = 0;
+                float other = 0;
+
+                for(int j=0; j<myTensorFlow.results_dasahuman.size(); j++){
+                    if(index ==  myTensorFlow.results_dasafood.get(j).getImageId()){
+                        dasafood = myTensorFlow.results_dasafood.get(j).getConfidence();
+                    }
+                    if(index ==  myTensorFlow.results_dasahuman.get(j).getImageId()){
+                        dasahuman = myTensorFlow.results_dasahuman.get(j).getConfidence();
+                    }
+                    if(index ==  myTensorFlow.results_human.get(j).getImageId()){
+                        osyahuman = myTensorFlow.results_human.get(j).getConfidence();
+                    }
+                    if(index ==  myTensorFlow.results_other.get(j).getImageId()){
+                        other = myTensorFlow.results_other.get(j).getConfidence();
+                    }
+                }
+                myFileAccess.storeConfidence(dasafood,dasahuman,osyafood,osyahuman,other,index);
+            }
+            for(int i=0; i<output_num; i++){
+
+                String index = myTensorFlow.results_human.get(i).getImageId();
+                Log.d("debug","Human評価値 "+ i + " 番目: No." + index  );
+                float dasafood = 0;
+                float dasahuman = 0;
+                float osyafood = 0;
+                float osyahuman = myTensorFlow.results_human.get(i).getConfidence();
+                float other = 0;
+
+                for(int j=0; j<myTensorFlow.results_dasahuman.size(); j++){
+                    if(index ==  myTensorFlow.results_dasafood.get(j).getImageId()){
+                        dasafood = myTensorFlow.results_dasafood.get(j).getConfidence();
+                    }
+                    if(index ==  myTensorFlow.results_dasahuman.get(j).getImageId()){
+                        dasahuman = myTensorFlow.results_dasahuman.get(j).getConfidence();
+                    }
+                    if(index ==  myTensorFlow.results_food.get(j).getImageId()){
+                        osyafood = myTensorFlow.results_food.get(j).getConfidence();
+                    }
+                    if(index ==  myTensorFlow.results_other.get(j).getImageId()){
+                        other = myTensorFlow.results_other.get(j).getConfidence();
+                    }
+                }
+                myFileAccess.storeConfidence(dasafood,dasahuman,osyafood,osyahuman,other,index);
+            }
+            //
+            //  debug　ここまで
+            //
+
+
+
             //モデルクローズ
             myTensorFlow.endRecognition();
 
@@ -384,18 +447,17 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
                         cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos_food.get(i)));
                 image2d_bitmap_a.set( output_photos_human.get(i),
                         cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos_human.get(i)));
-
             }
             Log.d("debug","Complete cut image");
 
             myFileAccess.mkdirImage2D();
             // Human 2D画像保存
             for(int i=0; i<output_num; i++) {
-                File image2d_human = new File(myFileAccess.image2D + "/image2d_human_No_" + i  + "_" + myTensorFlow.results_human.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
-                myFileAccess.storeImage2D(image2d_bitmap_a.get(i),image2d_human);
+                File image2d_human = new File(myFileAccess.image2D + "/image2d_" + i + "_human_" + myTensorFlow.results_human.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_human.get(i)),image2d_human);
 
-                File image2d_food = new File(myFileAccess.image2D + "/image2d_food_No_" + i + "_" + myTensorFlow.results_food.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
-                myFileAccess.storeImage2D(image2d_bitmap_a.get(i),image2d_food);
+                File image2d_food = new File(myFileAccess.image2D + "/image2d_" + i + "_food_" + myTensorFlow.results_food.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_food.get(i)),image2d_food);
             }
             onProgressUpdate(42 );
             Log.d("debug", "*** END instakePhotos Task ***");
@@ -457,6 +519,10 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
         ArrayList<Classifier.Recognition> results_food = new ArrayList<Classifier.Recognition>();
         ArrayList<Classifier.Recognition> results_human = new ArrayList<Classifier.Recognition>();
 
+        ArrayList<Classifier.Recognition> results_dasafood = new ArrayList<Classifier.Recognition>();
+        ArrayList<Classifier.Recognition> results_dasahuman = new ArrayList<Classifier.Recognition>();
+        ArrayList<Classifier.Recognition> results_other = new ArrayList<Classifier.Recognition>();
+
         MyTensorFlow() {
             INPUT_SIZE = 299;
             IMAGE_MEAN = 128;
@@ -510,6 +576,17 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
                     results_human.add(results.get(i));
                 }else{
                     Log.d("debug","Unmatching labels");
+                    // debug用
+                    if(results.get(i).getTitle().equals("dasafood")){
+                        results_dasafood.add(results.get(i));
+                    }
+                    if(results.get(i).getTitle().equals("dasahuman")){
+                        results_dasahuman.add(results.get(i));
+                    }
+                    if(results.get(i).getTitle().equals("other")){
+                        results_other.add(results.get(i));
+                    }
+
                 }
             }
         }
