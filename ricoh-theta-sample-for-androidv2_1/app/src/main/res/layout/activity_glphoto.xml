@@ -26,4 +26,11 @@
             android:visibility="gone" />
     </FrameLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3" />
+
 </LinearLayout>

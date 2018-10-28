@@ -13,8 +13,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="?android:actionBarSize"
-        tools:targetApi="lollipop">
+        android:minHeight="?android:actionBarSize">
     </Toolbar>
 
     <GridView
