@@ -352,7 +352,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
 
             //TODO モデル読み込みは事前の実施が可能(位置変更可)
             //モデル読み込み
-            MyTensorFlow_GL myTensorFlow = new MyTensorFlow_GL();
+            MyTensorFlow myTensorFlow = new MyTensorFlow();
             myTensorFlow.modelCreate();
 
             //TODO ビットマップの数と合わせる
@@ -390,15 +390,12 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
 
             myFileAccess.mkdirImage2D();
             // Human 2D画像保存
-            for(int index : output_photos_human) {
-                File image2d_human = new File(myFileAccess.image2D + "/image2d_human_" +Integer.toString(index) + myFileAccess.fileid + ".JPG");
-                myFileAccess.storeImage2D(image2d_bitmap_a.get(index),image2d_human);
-            }
+            for(int i=0; i<output_num; i++) {
+                File image2d_human = new File(myFileAccess.image2D + "/image2d_human_No_" + i  + "_" + myTensorFlow.results_human.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                myFileAccess.storeImage2D(image2d_bitmap_a.get(i),image2d_human);
 
-            // Food 2D画像保存
-            for(int index : output_photos_food) {
-                File image2d_food = new File(myFileAccess.image2D + "/image2d_food_" +Integer.toString(index) + myFileAccess.fileid + ".JPG");
-                myFileAccess.storeImage2D(image2d_bitmap_a.get(index),image2d_food);
+                File image2d_food = new File(myFileAccess.image2D + "/image2d_food_No_" + i + "_" + myTensorFlow.results_food.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                myFileAccess.storeImage2D(image2d_bitmap_a.get(i),image2d_food);
             }
             onProgressUpdate(42 );
             Log.d("debug", "*** END instakePhotos Task ***");
@@ -412,13 +409,13 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
 
             progressBar.setVisibility(View.GONE);
 
-
             Toast toast = Toast.makeText(getApplicationContext(), "Complete instakePhotos", Toast.LENGTH_LONG);
             toast.show();
 
         }
     }
-    public class MyTensorFlow_GL {
+
+    public class MyTensorFlow {
         // These are the settings for the original v1 Inception model. If you want to
         // use a model that's been produced from the TensorFlow for Poets codelab,
         // you'll need to set IMAGE_SIZE = 299, IMAGE_MEAN = 128, IMAGE_STD = 128,
@@ -460,7 +457,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
         ArrayList<Classifier.Recognition> results_food = new ArrayList<Classifier.Recognition>();
         ArrayList<Classifier.Recognition> results_human = new ArrayList<Classifier.Recognition>();
 
-        MyTensorFlow_GL() {
+        MyTensorFlow() {
             INPUT_SIZE = 299;
             IMAGE_MEAN = 128;
             IMAGE_STD = 128;

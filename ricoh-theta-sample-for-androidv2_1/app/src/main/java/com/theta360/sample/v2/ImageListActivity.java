@@ -423,17 +423,14 @@ public class ImageListActivity extends Activity {
 
 			Log.d("debug","Complete cut image");
 
-			// Human 2D画像保存
-			for(int index : output_photos_human) {
-				File image2d_human = new File(myFileAccess.image2D + "/image2d_human_" +Integer.toString(index) + myFileAccess.fileid + ".JPG");
-				myFileAccess.storeImage2D(image2d_bitmap_a.get(index),image2d_human);
-			}
 
-			// Food 2D画像保存
-			for(int index : output_photos_food) {
-				File image2d_food = new File(myFileAccess.image2D + "/image2d_food_" +Integer.toString(index) + myFileAccess.fileid + ".JPG");
-				myFileAccess.storeImage2D(image2d_bitmap_a.get(index),image2d_food);
-			}
+            for(int i=0; i<output_num; i++) {
+                File image2d_human = new File(myFileAccess.image2D + "/image2d_human_No_" + i  + "_" + myTensorFlow.results_human.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                myFileAccess.storeImage2D(image2d_bitmap_a.get(i),image2d_human);
+
+                File image2d_food = new File(myFileAccess.image2D + "/image2d_food_No_" + i + "_" + myTensorFlow.results_food.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                myFileAccess.storeImage2D(image2d_bitmap_a.get(i),image2d_food);
+            }
 
 			Log.d("debug", "*** END instakePhotos Task ***");
 			return null;
