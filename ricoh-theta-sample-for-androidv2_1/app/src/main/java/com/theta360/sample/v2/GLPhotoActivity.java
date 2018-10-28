@@ -301,7 +301,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
     }
 
 
-    private class InstakePhotos extends AsyncTask<String, Object, Void> {
+    private class InstakePhotos extends AsyncTask<String, Integer, Void> {
 
         private ProgressBar progressBar;
 
@@ -314,15 +314,14 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
 
             progressBar.setVisibility(View.VISIBLE);
 
-            progressBar.setMax(100); // 水平プログレスバーの最大値を設定
+            progressBar.setMax(42); // 水平プログレスバーの最大値を設定
             progressBar.setProgress(0); // 水平プログレスバーの値を設定
             progressBar.setSecondaryProgress(60); // 水平プログレスバーのセカンダリ値を設定
-
         }
 
         @Override
-        protected void onProgressUpdate(Object... value){
-
+        protected void onProgressUpdate(Integer... value){
+            progressBar.setProgress(value[0]); // 水平プログレスバーの値を設定
         }
 
         @Override
@@ -346,6 +345,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
             image2d_bitmap_a = cutter.cut(image360_bitmap, pitch_roll_yaw,0.5, 0.5, 0,null,150);
             Log.d("debug","Complete cut image");
 
+            onProgressUpdate(1);
 
             //TODO 上位何個を出力するか定数として一か所で定義するか検討
             int output_num = 3; //<変更>
@@ -359,6 +359,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
             //切り取った画像を認識してinstabaeを抽出(resultsに代入)
             for(int i = 0; i < image2d_bitmap_a.size(); i++){
                 myTensorFlow.startRecognition(image2d_bitmap_a.get(i), Integer.toString(i));
+                onProgressUpdate(1+i);
             }
 
             //resultsを認識率の高い順にソート
@@ -374,6 +375,8 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
             }
             //モデルクローズ
             myTensorFlow.endRecognition();
+
+            onProgressUpdate(41);
 
             //上で分かった識別率の高い画像だけ画質を上げる　
             for(int i = 0; i < output_num; i++){
@@ -397,7 +400,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
                 File image2d_food = new File(myFileAccess.image2D + "/image2d_food_" +Integer.toString(index) + myFileAccess.fileid + ".JPG");
                 myFileAccess.storeImage2D(image2d_bitmap_a.get(index),image2d_food);
             }
-
+            onProgressUpdate(42 );
             Log.d("debug", "*** END instakePhotos Task ***");
             return null;
         }
