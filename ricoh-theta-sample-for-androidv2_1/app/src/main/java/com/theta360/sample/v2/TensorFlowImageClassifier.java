@@ -153,6 +153,45 @@ public class TensorFlowImageClassifier implements Classifier {
 
     //outputsにinstabae,notinstabaeの値が入っている
       ArrayList<Recognition> recognitions = new ArrayList<Recognition>();
+      /*
+      int osyafood_n = -1;
+      int dasafood_n = -1;
+      int osyahuman_n = -1;
+      int dasahuman_n = -1;
+      for (int i = 0; i < outputs.length; ++i) {
+        if (labels.get(i).equals("osyafood")) {
+          osyafood_n = i;
+        } else if (labels.get(i).equals("osyahuman")) {
+          osyahuman_n = i;
+        } else if (labels.get(i).equals("dasafood")) {
+          dasafood_n = i;
+        } else if (labels.get(i).equals("dasahuman")) {
+          dasahuman_n = i;
+        }
+      }
+
+      if(outputs[osyafood_n] > outputs[osyahuman_n]){
+          if(outputs[osyafood_n] > outputs[dasafood_n]){
+              recognitions.add(new Recognition(
+                      "" + osyafood_n, labels.get(osyafood_n), outputs[osyafood_n], null, imageId));
+          }else{
+              recognitions.add(new Recognition(
+                      "" + osyafood_n, labels.get(osyafood_n), (float) -1.0, null, imageId));
+          }
+          recognitions.add(new Recognition(
+                  "" + osyahuman_n, labels.get(osyahuman_n), (float) -1.0, null, imageId));
+      }else{
+          if(outputs[osyahuman_n] > outputs[dasahuman_n]){
+              recognitions.add(new Recognition(
+                      "" + osyahuman_n, labels.get(osyahuman_n), outputs[osyahuman_n], null, imageId));
+          }else{
+              recognitions.add(new Recognition(
+                      "" + osyahuman_n, labels.get(osyahuman_n), (float) -1.0, null, imageId));
+          }
+          recognitions.add(new Recognition(
+                  "" + osyafood_n, labels.get(osyafood_n), (float) -1.0, null, imageId));
+      }
+      */
       for (int i = 0; i < outputs.length; ++i) {
           if (labels.get(i).equals("osyafood")||labels.get(i).equals("osyahuman")||
                   labels.get(i).equals("dasafood")|| labels.get(i).equals("dasahuman")||
@@ -161,6 +200,8 @@ public class TensorFlowImageClassifier implements Classifier {
                       "" + i, labels.get(i), outputs[i], null, imageId));
           }
       }
+
+
       return recognitions;
   }
 

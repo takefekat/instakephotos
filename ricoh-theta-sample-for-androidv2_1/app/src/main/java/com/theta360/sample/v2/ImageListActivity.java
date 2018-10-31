@@ -404,8 +404,16 @@ public class ImageListActivity extends Activity {
 			ArrayList<Integer> output_photos_food = new ArrayList();
 			ArrayList<Integer> output_photos_human = new ArrayList();
 			for(int i = 0; i < output_num; i++){
-				output_photos_food.add(Integer.parseInt(myTensorFlow.results_food.get(i).getImageId()));
-				output_photos_human.add(Integer.parseInt(myTensorFlow.results_human.get(i).getImageId()));
+				if(myTensorFlow.results_food.get(i).getConfidence().intValue() == -1){
+					output_photos_food.add(-1);
+				}else{
+					output_photos_food.add(Integer.parseInt(myTensorFlow.results_food.get(i).getImageId()));
+				}
+				if(myTensorFlow.results_human.get(i).getConfidence().intValue() == -1){
+					output_photos_human.add(-1);
+				}else{
+					output_photos_human.add(Integer.parseInt(myTensorFlow.results_human.get(i).getImageId()));
+				}
 			}
 
 
@@ -413,11 +421,11 @@ public class ImageListActivity extends Activity {
             // debug ここから（評価値ファイル作成）
             //
             for(int i=0; i<output_num; i++){
-                String index = myTensorFlow.results_food.get(i).getImageId();
+                String index = myTensorFlow.results_food_d.get(i).getImageId();
                 Log.d("debug","Food評価値 "+ i + " 番目: No." + index  );
                 float dasafood = 0;
                 float dasahuman = 0;
-                float osyafood = myTensorFlow.results_food.get(i).getConfidence();
+                float osyafood = myTensorFlow.results_food_d.get(i).getConfidence();
                 float osyahuman = 0;
                 float other = 0;
 
@@ -428,8 +436,8 @@ public class ImageListActivity extends Activity {
                     if(index ==  myTensorFlow.results_dasahuman.get(j).getImageId()){
                         dasahuman = myTensorFlow.results_dasahuman.get(j).getConfidence();
                     }
-                    if(index ==  myTensorFlow.results_human.get(j).getImageId()){
-                        osyahuman = myTensorFlow.results_human.get(j).getConfidence();
+                    if(index ==  myTensorFlow.results_human_d.get(j).getImageId()){
+                        osyahuman = myTensorFlow.results_human_d.get(j).getConfidence();
                     }
                     if(index ==  myTensorFlow.results_other.get(j).getImageId()){
                         other = myTensorFlow.results_other.get(j).getConfidence();
@@ -439,12 +447,12 @@ public class ImageListActivity extends Activity {
             }
             for(int i=0; i<output_num; i++){
 
-                String index = myTensorFlow.results_human.get(i).getImageId();
+                String index = myTensorFlow.results_human_d.get(i).getImageId();
                 Log.d("debug","Human評価値 "+ i + " 番目: No." + index  );
                 float dasafood = 0;
                 float dasahuman = 0;
                 float osyafood = 0;
-                float osyahuman = myTensorFlow.results_human.get(i).getConfidence();
+                float osyahuman = myTensorFlow.results_human_d.get(i).getConfidence();
                 float other = 0;
 
                 for(int j=0; j<myTensorFlow.results_dasahuman.size(); j++){
@@ -454,8 +462,8 @@ public class ImageListActivity extends Activity {
                     if(index ==  myTensorFlow.results_dasahuman.get(j).getImageId()){
                         dasahuman = myTensorFlow.results_dasahuman.get(j).getConfidence();
                     }
-                    if(index ==  myTensorFlow.results_food.get(j).getImageId()){
-                        osyafood = myTensorFlow.results_food.get(j).getConfidence();
+                    if(index ==  myTensorFlow.results_food_d.get(j).getImageId()){
+                        osyafood = myTensorFlow.results_food_d.get(j).getConfidence();
                     }
                     if(index ==  myTensorFlow.results_other.get(j).getImageId()){
                         other = myTensorFlow.results_other.get(j).getConfidence();
@@ -469,11 +477,16 @@ public class ImageListActivity extends Activity {
 
 			//上で分かった識別率の高い画像だけ画質を上げる　<変更>
 			for(int i = 0; i < output_num; i++){
-				image2d_bitmap_a.set( output_photos_food.get(i),
-						cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos_food.get(i)));
-				image2d_bitmap_a.set( output_photos_human.get(i),
-						cutter.cut_one(image360_bitmap, pitch_roll_yaw,0.5, 0.5,360,output_photos_human.get(i)));
-
+                if(output_photos_food.get(i).equals(-1)) {
+                }else{
+                    image2d_bitmap_a.set(output_photos_food.get(i),
+                            cutter.cut_one(image360_bitmap, pitch_roll_yaw, 0.5, 0.5, 360, output_photos_food.get(i)));
+                }
+                if(output_photos_human.get(i).equals(-1)){
+                }else {
+                    image2d_bitmap_a.set(output_photos_human.get(i),
+                            cutter.cut_one(image360_bitmap, pitch_roll_yaw, 0.5, 0.5, 360, output_photos_human.get(i)));
+                }
 			}
 
 			//モデルクローズ
@@ -481,15 +494,23 @@ public class ImageListActivity extends Activity {
 
 			Log.d("debug","Complete cut image");
 
-
+            //BitmapFactory.Options options = new BitmapFactory.Options();
+            //options.inScaled = false;
+            Bitmap no_image = BitmapFactory.decodeResource(getResources(), R.drawable.noimage);
             for(int i=0; i<output_num; i++) {
-                File image2d_human = new File(myFileAccess.image2D + "/image2d_human_" + i  + "_" + myTensorFlow.results_human.get(i).getConfidence() + "_" + myFileAccess.fileid + ".JPG");
-                myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_human.get(i)),image2d_human);
-
-                File image2d_food = new File(myFileAccess.image2D + "/image2d_food_" + i + "_" + myTensorFlow.results_food.get(i).getConfidence() + "_" + myFileAccess.fileid + ".JPG");
-                myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_food.get(i)),image2d_food);
+                File image2d_human = new File(myFileAccess.image2D + "/image2d_" + i + "_human_" + myTensorFlow.results_human.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                if(output_photos_human.get(i).equals(-1)){
+                    myFileAccess.storeImage2D(no_image, image2d_human);
+                }else {
+                    myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_human.get(i)), image2d_human);
+                }
+                File image2d_food = new File(myFileAccess.image2D + "/image2d_" + i + "_food_" + myTensorFlow.results_food.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                if(output_photos_food.get(i).equals(-1)){
+                    myFileAccess.storeImage2D(no_image, image2d_food);
+                }else {
+                    myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_food.get(i)),image2d_food);
+                }
             }
-
 			Log.d("debug", "*** END instakePhotos Task ***");
 			return null;
 		}
@@ -540,6 +561,8 @@ public class ImageListActivity extends Activity {
 		ArrayList<Classifier.Recognition> results_food = new ArrayList<Classifier.Recognition>();
 		ArrayList<Classifier.Recognition> results_human = new ArrayList<Classifier.Recognition>();
 
+        ArrayList<Classifier.Recognition> results_food_d = new ArrayList<Classifier.Recognition>();
+        ArrayList<Classifier.Recognition> results_human_d = new ArrayList<Classifier.Recognition>();
         ArrayList<Classifier.Recognition> results_dasafood = new ArrayList<Classifier.Recognition>();
         ArrayList<Classifier.Recognition> results_dasahuman = new ArrayList<Classifier.Recognition>();
         ArrayList<Classifier.Recognition> results_other = new ArrayList<Classifier.Recognition>();
@@ -554,9 +577,10 @@ public class ImageListActivity extends Activity {
 //            INPUT_NAME = "Mul";
 			OUTPUT_NAME = "final_result";
 			//TODO MODEL_FILEはどちらかを選択
-			MODEL_FILE = "file:///android_asset/instabae_graph_android_unused.pb";
+			MODEL_FILE = "file:///android_asset/retrained_graph.pb";
+//            MODEL_FILE = "file:///android_asset/instabae_graph_android_unused.pb";
 //            MODEL_FILE = "file:///android_asset/instabae_graph_android.pb";
-			LABEL_FILE = "file:///android_asset/instabae_labels.txt";
+			LABEL_FILE = "file:///android_asset/retrained_labels.txt";
 
 			croppedBitmap = null;
 		}
@@ -591,13 +615,30 @@ public class ImageListActivity extends Activity {
 
 			croppedBitmap = Bitmap.createBitmap(_inputImage, 0, 0, _inputImage.getWidth(), _inputImage.getHeight(), imageToCropTransform, true);
 			List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap, _image_num);
-			for(int i = 0; i < results.size(); i++){
-				if(results.get(i).getTitle().equals("osyafood")){
-					results_food.add(results.get(i));
-				}else if(results.get(i).getTitle().equals("osyahuman")){
-					results_human.add(results.get(i));
-				}else{
-					//Log.d("debug","Unmatching labels");
+
+            int osyafood_n = -1;
+            int dasafood_n = -1;
+            int osyahuman_n = -1;
+            int dasahuman_n = -1;
+            for (int i = 0; i < results.size(); i++) {
+                if (results.get(i).getTitle().equals("osyafood")) {
+                    osyafood_n = i;
+                } else if (results.get(i).getTitle().equals("osyahuman")) {
+                    osyahuman_n = i;
+                } else if (results.get(i).getTitle().equals("dasafood")) {
+                    dasafood_n = i;
+                } else if (results.get(i).getTitle().equals("dasahuman")) {
+                    dasahuman_n = i;
+                }
+            }
+
+            for(int i = 0; i < results.size(); i++){
+                if(results.get(i).getTitle().equals("osyafood")){
+                    results_food_d.add(results.get(i));
+                }else if(results.get(i).getTitle().equals("osyahuman")){
+                    results_human_d.add(results.get(i));
+                }else{
+                    Log.d("debug","Unmatching labels");
                     // debug用
                     if(results.get(i).getTitle().equals("dasafood")){
                         results_dasafood.add(results.get(i));
@@ -608,8 +649,30 @@ public class ImageListActivity extends Activity {
                     if(results.get(i).getTitle().equals("other")){
                         results_other.add(results.get(i));
                     }
-				}
-			}
+
+                }
+            }
+
+            if(results.get(osyafood_n).getConfidence() > results.get(osyahuman_n).getConfidence()){
+                if(results.get(osyafood_n).getConfidence() > results.get(dasafood_n).getConfidence()){
+                    results_food.add(results.get(osyafood_n));
+                }else{
+                    results_food.add(new Classifier.Recognition(
+                            "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float)-1.0, null, results.get(osyafood_n).getImageId()));
+                }
+                results_human.add(new Classifier.Recognition(
+                        "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float)-1.0, null, results.get(osyahuman_n).getImageId()));
+            }else{
+                if(results.get(osyahuman_n).getConfidence() > results.get(dasahuman_n).getConfidence()){
+                    results_human.add(results.get(osyahuman_n));
+                }else{
+                    results_human.add(new Classifier.Recognition(
+                            "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float)-1.0, null, results.get(osyahuman_n).getImageId()));
+                }
+                results_food.add(new Classifier.Recognition(
+                        "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float)-1.0, null, results.get(osyafood_n).getImageId()));
+            }
+
 		}
 
 		/**
