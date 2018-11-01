@@ -373,6 +373,23 @@ public class MyFileAccess {
         }
     }
 
+    public void storeConfidence_i(float instabae,
+                                  float notinstabae,
+                                  String index){
+        File filename = new File(image2D + "/image2D_" + index + "_" + fileid + ".txt");
+        try {
+            PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(filename)));
+            pw.println("instabae " + instabae);
+            pw.println("notinstabae " + notinstabae);
+            pw.close();
+            Log.d("debug", "評価値ファイル保存: " + filename);
+            Log.d("debug","instabae " + instabae);
+            Log.d("debug","notinstabae " + notinstabae);
+        } catch (IOException e) {
+            Log.d("debug", "評価値ファイルを保存できません。");
+            e.printStackTrace();
+        }
+    }
 
 
 

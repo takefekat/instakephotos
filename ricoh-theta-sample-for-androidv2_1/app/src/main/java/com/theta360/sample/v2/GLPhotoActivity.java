@@ -189,9 +189,9 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
         //private long receivedDataSize = 0;
 
         public LoadPhotoTask(String cameraIpAddress, String fileId) {
-        //    this.logViewer = (LogView) findViewById(R.id.photo_info);
+            //    this.logViewer = (LogView) findViewById(R.id.photo_info);
             this.progressBar = (ProgressBar) findViewById(R.id.loading_photo_progress_bar);
-          //  this.cameraIpAddress = cameraIpAddress;
+            //  this.cameraIpAddress = cameraIpAddress;
             this.fileId = fileId;
         }
 
@@ -227,7 +227,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
                 if (param instanceof Integer) {
                     progressBar.setProgress((Integer) param);
                 } else if (param instanceof String) {
-              //      logViewer.append((String) param);
+                    //      logViewer.append((String) param);
                 }
             }
         }
@@ -239,7 +239,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
                 byte[] dataObject = imageData.getRawData();
 
                 if (dataObject == null) {
-                  Log.d("debug","Image360 cannot Load");
+                    Log.d("debug","Image360 cannot Load");
                     return;
                 }
 
@@ -268,14 +268,14 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
 
                 }
             } else {
-            //    logViewer.append("failed to download image");
+                //    logViewer.append("failed to download image");
             }
         }
     }
 
     /**
      * Activity call method
-     * 
+     *
      * @param activity Call source activity
      * @param cameraIpAddress IP address for camera device
      * @param fileId Photo object identifier
@@ -348,12 +348,16 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
 
             onProgressUpdate(1);
 
+            SelectMode selectMode = new SelectMode();
+
             //TODO 上位何個を出力するか定数として一か所で定義するか検討
             int output_num = 3; //<変更>
-
+            if(selectMode.DEFINE_C == 1) {
+                output_num = 6; //<変更>
+            }
             //TODO モデル読み込みは事前の実施が可能(位置変更可)
             //モデル読み込み
-            MyTensorFlow myTensorFlow = new MyTensorFlow();
+            MyTensorFlow myTensorFlow = new MyTensorFlow(selectMode.DEFINE_C,GLPhotoActivity.this);
             myTensorFlow.modelCreate();
 
             //TODO ビットマップの数と合わせる
@@ -364,127 +368,179 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
             }
 
             //resultsを認識率の高い順にソート
-            Collections.sort(myTensorFlow.results_food, new Classifier.ScoreCmp());
-            Collections.sort(myTensorFlow.results_human, new Classifier.ScoreCmp());
+            if(selectMode.DEFINE_C == 0) {
+                Collections.sort(myTensorFlow.results_food, new Classifier.ScoreCmp());
+                Collections.sort(myTensorFlow.results_human, new Classifier.ScoreCmp());
 
-            //識別率の高い画像の番号を保存
-            ArrayList<Integer> output_photos_food = new ArrayList();
-            ArrayList<Integer> output_photos_human = new ArrayList();
-            for(int i = 0; i < output_num; i++){
-                if(myTensorFlow.results_food.get(i).getConfidence().intValue() == -1){
-                    output_photos_food.add(-1);
-                }else{
-                    output_photos_food.add(Integer.parseInt(myTensorFlow.results_food.get(i).getImageId()));
+                //識別率の高い画像の番号を保存
+                ArrayList<Integer> output_photos_food = new ArrayList();
+                ArrayList<Integer> output_photos_human = new ArrayList();
+                for(int i = 0; i < output_num; i++){
+                    if(myTensorFlow.results_food.get(i).getConfidence().intValue() == -1){
+                        output_photos_food.add(-1);
+                    }else{
+                        output_photos_food.add(Integer.parseInt(myTensorFlow.results_food.get(i).getImageId()));
+                    }
+                    if(myTensorFlow.results_human.get(i).getConfidence().intValue() == -1){
+                        output_photos_human.add(-1);
+                    }else{
+                        output_photos_human.add(Integer.parseInt(myTensorFlow.results_human.get(i).getImageId()));
+                    }
                 }
-                if(myTensorFlow.results_human.get(i).getConfidence().intValue() == -1){
-                    output_photos_human.add(-1);
-                }else{
-                    output_photos_human.add(Integer.parseInt(myTensorFlow.results_human.get(i).getImageId()));
+
+                myFileAccess.mkdirImage2D();
+
+                //
+                // debug ここから（評価値ファイル作成）
+                //
+                for(int i=0; i<output_num; i++){
+                    String index = myTensorFlow.results_food_d.get(i).getImageId();
+                    Log.d("debug","Food評価値 "+ i + " 番目: No." + index  );
+                    float dasafood = 0;
+                    float dasahuman = 0;
+                    float osyafood = myTensorFlow.results_food_d.get(i).getConfidence();
+                    float osyahuman = 0;
+                    float other = 0;
+
+                    for(int j=0; j<myTensorFlow.results_dasahuman.size(); j++){
+                        if(index ==  myTensorFlow.results_dasafood.get(j).getImageId()){
+                            dasafood = myTensorFlow.results_dasafood.get(j).getConfidence();
+                        }
+                        if(index ==  myTensorFlow.results_dasahuman.get(j).getImageId()){
+                            dasahuman = myTensorFlow.results_dasahuman.get(j).getConfidence();
+                        }
+                        if(index ==  myTensorFlow.results_human_d.get(j).getImageId()){
+                            osyahuman = myTensorFlow.results_human_d.get(j).getConfidence();
+                        }
+                        if(index ==  myTensorFlow.results_other.get(j).getImageId()){
+                            other = myTensorFlow.results_other.get(j).getConfidence();
+                        }
+                    }
+                    myFileAccess.storeConfidence(dasafood,dasahuman,osyafood,osyahuman,other,index);
                 }
+                for(int i=0; i<output_num; i++){
+
+                    String index = myTensorFlow.results_human_d.get(i).getImageId();
+                    Log.d("debug","Human評価値 "+ i + " 番目: No." + index  );
+                    float dasafood = 0;
+                    float dasahuman = 0;
+                    float osyafood = 0;
+                    float osyahuman = myTensorFlow.results_human_d.get(i).getConfidence();
+                    float other = 0;
+
+                    for(int j=0; j<myTensorFlow.results_dasahuman.size(); j++){
+                        if(index ==  myTensorFlow.results_dasafood.get(j).getImageId()){
+                            dasafood = myTensorFlow.results_dasafood.get(j).getConfidence();
+                        }
+                        if(index ==  myTensorFlow.results_dasahuman.get(j).getImageId()){
+                            dasahuman = myTensorFlow.results_dasahuman.get(j).getConfidence();
+                        }
+                        if(index ==  myTensorFlow.results_food_d.get(j).getImageId()){
+                            osyafood = myTensorFlow.results_food_d.get(j).getConfidence();
+                        }
+                        if(index ==  myTensorFlow.results_other.get(j).getImageId()){
+                            other = myTensorFlow.results_other.get(j).getConfidence();
+                        }
+                    }
+                    myFileAccess.storeConfidence(dasafood,dasahuman,osyafood,osyahuman,other,index);
+                }
+                //
+                //  debug　ここまで
+                //
+
+                onProgressUpdate(41);
+
+                //上で分かった識別率の高い画像だけ画質を上げる
+                for (int i = 0; i < output_num; i++) {
+                    if (output_photos_food.get(i).equals(-1)) {
+                    } else {
+                        image2d_bitmap_a.set(output_photos_food.get(i),
+                                cutter.cut_one(image360_bitmap, pitch_roll_yaw, 0.5, 0.5, 360, output_photos_food.get(i)));
+                    }
+                    if (output_photos_human.get(i).equals(-1)) {
+                    } else {
+                        image2d_bitmap_a.set(output_photos_human.get(i),
+                                cutter.cut_one(image360_bitmap, pitch_roll_yaw, 0.5, 0.5, 360, output_photos_human.get(i)));
+                    }
+                }
+
+                Log.d("debug","Complete cut image");
+
+                myFileAccess.mkdirImage2D();
+                // Human 2D画像保存
+                //BitmapFactory.Options options = new BitmapFactory.Options();
+                //options.inScaled = false;
+                Bitmap no_image = BitmapFactory.decodeResource(getResources(), R.drawable.noimage);
+                for(int i=0; i<output_num; i++) {
+                    File image2d_human = new File(myFileAccess.image2D + "/image2d_" + i + "_human_" + myTensorFlow.results_human.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                    if(output_photos_human.get(i).equals(-1)){
+                        myFileAccess.storeImage2D(no_image, image2d_human);
+                    }else {
+                        myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_human.get(i)), image2d_human);
+                    }
+                    File image2d_food = new File(myFileAccess.image2D + "/image2d_" + i + "_food_" + myTensorFlow.results_food.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                    if(output_photos_food.get(i).equals(-1)){
+                        myFileAccess.storeImage2D(no_image, image2d_food);
+                    }else {
+                        myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_food.get(i)),image2d_food);
+                    }
+                }
+                onProgressUpdate(42 );
+
+            }else{
+                Collections.sort(myTensorFlow.results_instabae, new Classifier.ScoreCmp());
+
+                //識別率の高い画像の番号を保存
+                ArrayList<Integer> output_photos = new ArrayList();
+                for(int i = 0; i < output_num; i++){
+                    output_photos.add(Integer.parseInt(myTensorFlow.results_instabae.get(i).getImageId()));
+                }
+
+                myFileAccess.mkdirImage2D();
+
+                //
+                // debug ここから（評価値ファイル作成）
+                //
+                for(int i=0; i<output_num; i++){
+                    String index = myTensorFlow.results_instabae.get(i).getImageId();
+                    Log.d("debug","Instabae評価値 "+ i + " 番目: No." + index  );
+                    float notinstabae = 0;
+                    float instabae = myTensorFlow.results_instabae.get(i).getConfidence();
+
+                    for(int j=0; j<myTensorFlow.results_instabae.size(); j++){
+                        if(index ==  myTensorFlow.results_instabae.get(j).getImageId()){
+                            notinstabae = myTensorFlow.results_notinstabae.get(j).getConfidence();
+                        }
+                    }
+                    myFileAccess.storeConfidence_i(instabae,notinstabae,index);
+                }
+                //
+                //  debug　ここまで
+                //
+
+                onProgressUpdate(41);
+
+                //上で分かった識別率の高い画像だけ画質を上げる
+                for (int i = 0; i < output_num; i++) {
+                    image2d_bitmap_a.set(output_photos.get(i),
+                            cutter.cut_one(image360_bitmap, pitch_roll_yaw, 0.5, 0.5, 360, output_photos.get(i)));
+                }
+                Log.d("debug","Complete cut image");
+
+                myFileAccess.mkdirImage2D();
+                // 2D画像保存
+                for(int i=0; i<output_num/2; i++) {
+                    File image2d_human = new File(myFileAccess.image2D + "/image2d_" + i + "_human_" + myTensorFlow.results_instabae.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                    myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos.get(i)), image2d_human);
+                    File image2d_food = new File(myFileAccess.image2D + "/image2d_" + i + "_food_" + myTensorFlow.results_instabae.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                    myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos.get(i+1)),image2d_food);
+                }
+                onProgressUpdate(42 );
             }
-
-            myFileAccess.mkdirImage2D();
-
-            //
-            // debug ここから（評価値ファイル作成）
-            //
-            for(int i=0; i<output_num; i++){
-                String index = myTensorFlow.results_food_d.get(i).getImageId();
-                Log.d("debug","Food評価値 "+ i + " 番目: No." + index  );
-                float dasafood = 0;
-                float dasahuman = 0;
-                float osyafood = myTensorFlow.results_food_d.get(i).getConfidence();
-                float osyahuman = 0;
-                float other = 0;
-
-                for(int j=0; j<myTensorFlow.results_dasahuman.size(); j++){
-                    if(index ==  myTensorFlow.results_dasafood.get(j).getImageId()){
-                        dasafood = myTensorFlow.results_dasafood.get(j).getConfidence();
-                    }
-                    if(index ==  myTensorFlow.results_dasahuman.get(j).getImageId()){
-                        dasahuman = myTensorFlow.results_dasahuman.get(j).getConfidence();
-                    }
-                    if(index ==  myTensorFlow.results_human_d.get(j).getImageId()){
-                        osyahuman = myTensorFlow.results_human_d.get(j).getConfidence();
-                    }
-                    if(index ==  myTensorFlow.results_other.get(j).getImageId()){
-                        other = myTensorFlow.results_other.get(j).getConfidence();
-                    }
-                }
-                myFileAccess.storeConfidence(dasafood,dasahuman,osyafood,osyahuman,other,index);
-            }
-            for(int i=0; i<output_num; i++){
-
-                String index = myTensorFlow.results_human_d.get(i).getImageId();
-                Log.d("debug","Human評価値 "+ i + " 番目: No." + index  );
-                float dasafood = 0;
-                float dasahuman = 0;
-                float osyafood = 0;
-                float osyahuman = myTensorFlow.results_human_d.get(i).getConfidence();
-                float other = 0;
-
-                for(int j=0; j<myTensorFlow.results_dasahuman.size(); j++){
-                    if(index ==  myTensorFlow.results_dasafood.get(j).getImageId()){
-                        dasafood = myTensorFlow.results_dasafood.get(j).getConfidence();
-                    }
-                    if(index ==  myTensorFlow.results_dasahuman.get(j).getImageId()){
-                        dasahuman = myTensorFlow.results_dasahuman.get(j).getConfidence();
-                    }
-                    if(index ==  myTensorFlow.results_food_d.get(j).getImageId()){
-                        osyafood = myTensorFlow.results_food_d.get(j).getConfidence();
-                    }
-                    if(index ==  myTensorFlow.results_other.get(j).getImageId()){
-                        other = myTensorFlow.results_other.get(j).getConfidence();
-                    }
-                }
-                myFileAccess.storeConfidence(dasafood,dasahuman,osyafood,osyahuman,other,index);
-            }
-            //
-            //  debug　ここまで
-            //
-
-
 
             //モデルクローズ
             myTensorFlow.endRecognition();
 
-            onProgressUpdate(41);
-
-            //上で分かった識別率の高い画像だけ画質を上げる　
-            for(int i = 0; i < output_num; i++){
-                if(output_photos_food.get(i).equals(-1)) {
-                }else{
-                    image2d_bitmap_a.set(output_photos_food.get(i),
-                            cutter.cut_one(image360_bitmap, pitch_roll_yaw, 0.5, 0.5, 360, output_photos_food.get(i)));
-                }
-                if(output_photos_human.get(i).equals(-1)){
-                }else {
-                    image2d_bitmap_a.set(output_photos_human.get(i),
-                            cutter.cut_one(image360_bitmap, pitch_roll_yaw, 0.5, 0.5, 360, output_photos_human.get(i)));
-                }
-            }
-            Log.d("debug","Complete cut image");
-
-            myFileAccess.mkdirImage2D();
-            // Human 2D画像保存
-            //BitmapFactory.Options options = new BitmapFactory.Options();
-            //options.inScaled = false;
-            Bitmap no_image = BitmapFactory.decodeResource(getResources(), R.drawable.noimage);
-            for(int i=0; i<output_num; i++) {
-                File image2d_human = new File(myFileAccess.image2D + "/image2d_" + i + "_human_" + myTensorFlow.results_human.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
-                if(output_photos_human.get(i).equals(-1)){
-                    myFileAccess.storeImage2D(no_image, image2d_human);
-                }else {
-                    myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_human.get(i)), image2d_human);
-                }
-                File image2d_food = new File(myFileAccess.image2D + "/image2d_" + i + "_food_" + myTensorFlow.results_food.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
-                if(output_photos_food.get(i).equals(-1)){
-                    myFileAccess.storeImage2D(no_image, image2d_food);
-                }else {
-                    myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_food.get(i)),image2d_food);
-                }
-            }
-            onProgressUpdate(42 );
             Log.d("debug", "*** END instakePhotos Task ***");
             return null;
         }
@@ -499,232 +555,6 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
             Toast toast = Toast.makeText(getApplicationContext(), "Complete instakePhotos", Toast.LENGTH_LONG);
             toast.show();
 
-        }
-    }
-
-    public class MyTensorFlow {
-        // These are the settings for the original v1 Inception model. If you want to
-        // use a model that's been produced from the TensorFlow for Poets codelab,
-        // you'll need to set IMAGE_SIZE = 299, IMAGE_MEAN = 128, IMAGE_STD = 128,
-        // INPUT_NAME = "Mul", and OUTPUT_NAME = "final_result".
-        // You'll also need to update the MODEL_FILE and LABEL_FILE paths to point to
-        // the ones you produced.
-        //
-        // To use v3 Inception model, strip the DecodeJpeg Op from your retrained
-        // model first:
-        //
-        // python strip_unused.py \
-        // --input_graph=<retrained-pb-file> \
-        // --output_graph=<your-stripped-pb-file> \
-        // --input_node_names="Mul" \
-        // --output_node_names="final_result" \
-        // --input_binary=true
-        private final int INPUT_SIZE;
-        private final int IMAGE_MEAN;
-        private final float IMAGE_STD;
-        private final String INPUT_NAME;
-        private final String OUTPUT_NAME;
-        //private static final int INPUT_SIZE = 224;
-        //private static final int IMAGE_MEAN = 117;
-        //private static final float IMAGE_STD = 1;
-        //private static final String INPUT_NAME = "input";
-        //private static final String OUTPUT_NAME = "output";
-
-        private final String MODEL_FILE;
-        private final String LABEL_FILE;
-
-        private Bitmap croppedBitmap;
-        private Matrix imageToCropTransform;
-
-        private int inputHeight;
-        private int inputWidth;
-
-        private Classifier classifier;
-
-        ArrayList<Classifier.Recognition> results_food = new ArrayList<Classifier.Recognition>();
-        ArrayList<Classifier.Recognition> results_human = new ArrayList<Classifier.Recognition>();
-
-        ArrayList<Classifier.Recognition> results_food_d = new ArrayList<Classifier.Recognition>();
-        ArrayList<Classifier.Recognition> results_human_d = new ArrayList<Classifier.Recognition>();
-        ArrayList<Classifier.Recognition> results_dasafood = new ArrayList<Classifier.Recognition>();
-        ArrayList<Classifier.Recognition> results_dasahuman = new ArrayList<Classifier.Recognition>();
-        ArrayList<Classifier.Recognition> results_other = new ArrayList<Classifier.Recognition>();
-
-        MyTensorFlow() {
-            INPUT_SIZE = 299;
-            IMAGE_MEAN = 128;
-            IMAGE_STD = 128;
-            //TODO strip_unused.py実行時には--input_node_names, INPUT_NAME="Mul"にするべきかも
-            INPUT_NAME = "Placeholder";
-//            INPUT_NAME = "Mul";
-            OUTPUT_NAME = "final_result";
-            //TODO MODEL_FILEはどちらかを選択
-            MODEL_FILE = "file:///android_asset/retrained_graph.pb";
-//            MODEL_FILE = "file:///android_asset/instabae_graph_android_unused.pb";
-//            MODEL_FILE = "file:///android_asset/instabae_graph_android.pb";
-            LABEL_FILE = "file:///android_asset/retrained_labels.txt";
-
-            croppedBitmap = null;
-        }
-
-        public void modelCreate() {
-            classifier = TensorFlowImageClassifier.create(
-                    getAssets(),
-                    MODEL_FILE,
-                    LABEL_FILE,
-                    INPUT_SIZE,
-                    IMAGE_MEAN,
-                    IMAGE_STD,
-                    INPUT_NAME,
-                    OUTPUT_NAME
-            );
-        }
-
-        public void endRecognition() {
-            classifier.close();
-        }
-
-        public void startRecognition(Bitmap _inputImage, String _image_num) {
-
-            inputWidth = _inputImage.getWidth();
-            inputHeight = _inputImage.getHeight();
-            croppedBitmap = Bitmap.createBitmap(INPUT_SIZE, INPUT_SIZE, Bitmap.Config.ARGB_8888);
-
-            imageToCropTransform = getTransformationMatrix(
-                    inputWidth, inputHeight,
-                    INPUT_SIZE, INPUT_SIZE,
-                    0, true);//sensorOrientation, MAINTAIN_ASPECT
-
-            croppedBitmap = Bitmap.createBitmap(_inputImage, 0, 0, _inputImage.getWidth(), _inputImage.getHeight(), imageToCropTransform, true);
-            List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap, _image_num);
-
-            int osyafood_n = -1;
-            int dasafood_n = -1;
-            int osyahuman_n = -1;
-            int dasahuman_n = -1;
-            for (int i = 0; i < results.size(); i++) {
-                if (results.get(i).getTitle().equals("osyafood")) {
-                    osyafood_n = i;
-                } else if (results.get(i).getTitle().equals("osyahuman")) {
-                    osyahuman_n = i;
-                } else if (results.get(i).getTitle().equals("dasafood")) {
-                    dasafood_n = i;
-                } else if (results.get(i).getTitle().equals("dasahuman")) {
-                    dasahuman_n = i;
-                }
-            }
-
-            for(int i = 0; i < results.size(); i++){
-                if(results.get(i).getTitle().equals("osyafood")){
-                    results_food_d.add(results.get(i));
-                }else if(results.get(i).getTitle().equals("osyahuman")){
-                    results_human_d.add(results.get(i));
-                }else{
-                    Log.d("debug","Unmatching labels");
-                    // debug用
-                    if(results.get(i).getTitle().equals("dasafood")){
-                        results_dasafood.add(results.get(i));
-                    }
-                    if(results.get(i).getTitle().equals("dasahuman")){
-                        results_dasahuman.add(results.get(i));
-                    }
-                    if(results.get(i).getTitle().equals("other")){
-                        results_other.add(results.get(i));
-                    }
-
-                }
-            }
-
-            if(results.get(osyafood_n).getConfidence() > results.get(osyahuman_n).getConfidence()){
-                if(results.get(osyafood_n).getConfidence() > results.get(dasafood_n).getConfidence()){
-                    results_food.add(results.get(osyafood_n));
-                }else{
-                    results_food.add(new Classifier.Recognition(
-                            "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float)-1.0, null, results.get(osyafood_n).getImageId()));
-                }
-                results_human.add(new Classifier.Recognition(
-                        "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float)-1.0, null, results.get(osyahuman_n).getImageId()));
-            }else{
-                if(results.get(osyahuman_n).getConfidence() > results.get(dasahuman_n).getConfidence()){
-                    results_human.add(results.get(osyahuman_n));
-                }else{
-                    results_human.add(new Classifier.Recognition(
-                            "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float)-1.0, null, results.get(osyahuman_n).getImageId()));
-                }
-                results_food.add(new Classifier.Recognition(
-                        "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float)-1.0, null, results.get(osyafood_n).getImageId()));
-            }
-
-
-
-
-        }
-
-        /**
-         * Returns a transformation matrix from one reference frame into another.
-         * Handles cropping (if maintaining aspect ratio is desired) and rotation.
-         *
-         * @param srcWidth Width of source frame.
-         * @param srcHeight Height of source frame.
-         * @param dstWidth Width of destination frame.
-         * @param dstHeight Height of destination frame.
-         * @param applyRotation Amount of rotation to apply from one frame to another.
-         *  Must be a multiple of 90.
-         * @param maintainAspectRatio If true, will ensure that scaling in x and y remains constant,
-         * cropping the image if necessary.
-         * @return The transformation fulfilling the desired requirements.
-         */
-        public Matrix getTransformationMatrix(
-                final int srcWidth,
-                final int srcHeight,
-                final int dstWidth,
-                final int dstHeight,
-                final int applyRotation,
-                final boolean maintainAspectRatio) {
-            final Matrix matrix = new Matrix();
-
-            if (applyRotation != 0) {
-                if (applyRotation % 90 != 0) {
-                    //LOGGER.w("Rotation of %d % 90 != 0", applyRotation);
-                }
-
-                // Translate so center of image is at origin.
-                matrix.postTranslate(-srcWidth / 2.0f, -srcHeight / 2.0f);
-
-                // Rotate around origin.
-                matrix.postRotate(applyRotation);
-            }
-
-            // Account for the already applied rotation, if any, and then determine how
-            // much scaling is needed for each axis.
-            final boolean transpose = (Math.abs(applyRotation) + 90) % 180 == 0;
-
-            final int inWidth = transpose ? srcHeight : srcWidth;
-            final int inHeight = transpose ? srcWidth : srcHeight;
-
-            // Apply scaling if necessary.
-            if (inWidth != dstWidth || inHeight != dstHeight) {
-                final float scaleFactorX = dstWidth / (float) inWidth;
-                final float scaleFactorY = dstHeight / (float) inHeight;
-
-                if (maintainAspectRatio) {
-                    // Scale by minimum factor so that dst is filled completely while
-                    // maintaining the aspect ratio. Some image may fall off the edge.
-                    final float scaleFactor = Math.max(scaleFactorX, scaleFactorY);
-                    //final float scaleFactor = Math.min(scaleFactorX, scaleFactorY);
-                    matrix.postScale(scaleFactor, scaleFactor);
-                } else {
-                    // Scale exactly to fill dst from src.
-                    matrix.postScale(scaleFactorX, scaleFactorY);
-                }
-            }
-
-            if (applyRotation != 0) {
-                // Translate back from origin centered reference to destination frame.
-                matrix.postTranslate(dstWidth / 2.0f, dstHeight / 2.0f);
-            }
-
-            return matrix;
         }
     }
 
