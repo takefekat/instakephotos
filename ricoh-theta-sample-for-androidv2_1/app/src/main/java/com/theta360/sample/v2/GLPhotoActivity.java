@@ -529,7 +529,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
 
                 myFileAccess.mkdirImage2D();
                 // 2D画像保存
-                for(int i=0; i<output_num/2; i++) {
+                for(int i=0; i<output_num; i=i+2) {
                     File image2d_human = new File(myFileAccess.image2D + "/image2d_" + i + "_human_" + myTensorFlow.results_instabae.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
                     myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos.get(i)), image2d_human);
                     File image2d_food = new File(myFileAccess.image2D + "/image2d_" + i + "_food_" + myTensorFlow.results_instabae.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
