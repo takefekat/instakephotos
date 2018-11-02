@@ -161,7 +161,7 @@ public class MyTensorFlow {
                         }
                     }
                 }
-
+/*
                 //if (results.get(osyafood_n).getConfidence() > results.get(osyahuman_n).getConfidence()) {
                     if (results.get(osyafood_n).getConfidence() > results.get(dasafood_n).getConfidence()) {
                         results_food.add(new Classifier.Recognition(
@@ -183,6 +183,7 @@ public class MyTensorFlow {
                 //    results_food.add(new Classifier.Recognition(
                 //            "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float) -1.0, null, results.get(osyafood_n).getImageId()));
                 //}
+                */
                 /*
                 if (results.get(osyafood_n).getConfidence() > results.get(osyahuman_n).getConfidence()) {
                     if (results.get(osyafood_n).getConfidence() > results.get(dasafood_n).getConfidence()) {
@@ -204,7 +205,7 @@ public class MyTensorFlow {
                             "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float) -1.0, null, results.get(osyafood_n).getImageId()));
                 }
                 */
-                /*
+
                 if (results.get(osyafood_n).getConfidence() > results.get(dasafood_n).getConfidence()) {
                     results_food.add(results.get(osyafood_n));
                 } else {
@@ -217,7 +218,7 @@ public class MyTensorFlow {
                     results_human.add(new Classifier.Recognition(
                             "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float) -1.0, null, results.get(osyahuman_n).getImageId()));
                 }
-                */
+
             }else {
 
                 for (int i = 0; i < results.size(); i++) {

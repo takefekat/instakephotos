@@ -378,7 +378,7 @@ public class ImageListActivity extends Activity {
             CuttingImage cutter = new CuttingImage();
             ArrayList<Bitmap> image2d_bitmap_a;
 
-            image2d_bitmap_a = cutter.cut(image360_bitmap, pitch_roll_yaw,0.5, 0.5, 0,null,360);
+            image2d_bitmap_a = cutter.cut(image360_bitmap, pitch_roll_yaw,0.5, 0.5, 0,null,150);
             Log.d("debug","Complete cut image");
 
             SelectMode selectMode = new SelectMode();
