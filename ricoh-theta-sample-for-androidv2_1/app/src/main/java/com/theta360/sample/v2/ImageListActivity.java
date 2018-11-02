@@ -378,7 +378,7 @@ public class ImageListActivity extends Activity {
             CuttingImage cutter = new CuttingImage();
             ArrayList<Bitmap> image2d_bitmap_a;
 
-            image2d_bitmap_a = cutter.cut(image360_bitmap, pitch_roll_yaw,0.5, 0.5, 0,null,150);
+            image2d_bitmap_a = cutter.cut(image360_bitmap, pitch_roll_yaw,0.5, 0.5, 0,null,360);
             Log.d("debug","Complete cut image");
 
             SelectMode selectMode = new SelectMode();
@@ -388,6 +388,7 @@ public class ImageListActivity extends Activity {
             if(selectMode.DEFINE_C == 1) {
                 output_num = 6; //<変更>
             }
+
             //TODO モデル読み込みは事前の実施が可能(位置変更可)
             //モデル読み込み
             MyTensorFlow myTensorFlow = new MyTensorFlow(selectMode.DEFINE_C, selectMode.DEFINE_M, ImageListActivity.this);
@@ -405,8 +406,13 @@ public class ImageListActivity extends Activity {
                 Collections.sort(myTensorFlow.results_human, new Classifier.ScoreCmp());
 
                 //識別率の高い画像の番号を保存
-                ArrayList<Integer> output_photos_food = new ArrayList();
-                ArrayList<Integer> output_photos_human = new ArrayList();
+                ArrayList<Integer> output_photos_food = new ArrayList<Integer>();
+                ArrayList<Integer> output_photos_human = new ArrayList<Integer>();
+                for (int i=0;i<output_num; i++){
+                    output_photos_food.add(-1);
+                    output_photos_human.add(i);
+                }
+
                 for (int i = 0; i < output_num; i++) {
                     if (myTensorFlow.results_food.get(i).getConfidence().intValue() == -1) {
                         output_photos_food.add(-1);
@@ -419,7 +425,6 @@ public class ImageListActivity extends Activity {
                         output_photos_human.add(Integer.parseInt(myTensorFlow.results_human.get(i).getImageId()));
                     }
                 }
-
 
                 //
                 // debug ここから（評価値ファイル作成）
@@ -497,13 +502,13 @@ public class ImageListActivity extends Activity {
                 // Human 2D画像保存
                 Bitmap no_image = BitmapFactory.decodeResource(getResources(), R.drawable.noimage);
                 for(int i=0; i<output_num; i++) {
-                    File image2d_human = new File(myFileAccess.image2D + "/image2d_" + i + "_human_" + myTensorFlow.results_human.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                    File image2d_human = new File(myFileAccess.image2D + "/image2d_" + i + "_human_"  + myFileAccess.fileid + ".JPG");
                     if(output_photos_human.get(i).equals(-1)){
                         myFileAccess.storeImage2D(no_image, image2d_human);
                     }else {
                         myFileAccess.storeImage2D(image2d_bitmap_a.get(output_photos_human.get(i)), image2d_human);
                     }
-                    File image2d_food = new File(myFileAccess.image2D + "/image2d_" + i + "_food_" + myTensorFlow.results_food.get(i).getConfidence() + myFileAccess.fileid + ".JPG");
+                    File image2d_food = new File(myFileAccess.image2D + "/image2d_" + i + "_food_" +  myFileAccess.fileid + ".JPG");
                     if(output_photos_food.get(i).equals(-1)){
                         myFileAccess.storeImage2D(no_image, image2d_food);
                     }else {

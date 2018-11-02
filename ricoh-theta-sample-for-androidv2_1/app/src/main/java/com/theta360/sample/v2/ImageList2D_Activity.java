@@ -38,9 +38,13 @@ public class ImageList2D_Activity extends Activity {
 
         ArrayList<File> foodImage2DList = myFileAccess.getFoodImage2D();
         ArrayList<File> humanImage2DList = myFileAccess.getHumanImage2D();
-        for(int i = 0; i<foodImage2DList.size(); i++){
-            image2DFiles.add(humanImage2DList.get(i));
-            image2DFiles.add(foodImage2DList.get(i));
+        for(int i = 0; i<Math.max(humanImage2DList.size(),foodImage2DList.size()); i++){
+            if(i < humanImage2DList.size()) {
+                image2DFiles.add(humanImage2DList.get(i));
+            }
+            if(i< foodImage2DList.size()) {
+                image2DFiles.add(foodImage2DList.get(i));
+            }
         }
 
         // GridViewのインスタンスを生成
