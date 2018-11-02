@@ -560,6 +560,8 @@ public class TakePhotoActivity extends Activity {
                 GLPhotoActivity.startActivityForResult(TakePhotoActivity.this, cameraIpAddress, fileId, thumbnailImage, true);
             }
             else{
+                Toast toast = Toast.makeText(getApplication(), "Load Complete", Toast.LENGTH_LONG);
+                toast.show();
                 Log.d("debug","restart");
                 //onDestroy();
                 reload();
