@@ -37,6 +37,7 @@ import com.theta360.sample.v2.network.HttpConnector;
 import com.theta360.sample.v2.network.HttpDownloadListener;
 import com.theta360.sample.v2.network.HttpEventListener;
 import com.theta360.sample.v2.network.ImageData;
+import com.theta360.sample.v2.network.ImageInfo;
 import com.theta360.sample.v2.view.MJpegInputStream;
 import com.theta360.sample.v2.view.MJpegView;
 
@@ -58,7 +59,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventListener;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -72,14 +75,19 @@ public class TakePhotoActivity extends Activity {
 
     private LinearLayout layoutCameraArea;
     private Button btnShoot;
+    private Button btnLoad;
     private TextView textCameraStatus;
     private ImageSize currentImageSize;
     private MJpegView mMv;
     private boolean mConnectionSwitchEnabled = false;
     final Handler handler = new Handler();
-    //private LoadObjectListTask sampleTask = null;
+
     private ShowLiveViewTask livePreviewTask = null;
     private GetImageSizeTask getImageSizeTask = null;
+
+    private Set<String> oldFileListInCamera = null;
+
+    private boolean IsTakePhotoByAndroid = true;
 
 
     /**
@@ -105,6 +113,26 @@ public class TakePhotoActivity extends Activity {
                 textCameraStatus.setText(R.string.text_camera_synthesizing);
 
                 new ShootTask().execute();
+            }
+        });
+
+        btnLoad = (Button) findViewById(R.id.btn_load);
+        btnLoad.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnLoad.setEnabled(false);
+                textCameraStatus.setText(R.string.text_camera_synthesizing);
+
+
+                IsTakePhotoByAndroid = false;
+                Log.d("debug","aaaaaaaaaaa");
+                livePreviewTask = null;
+                Log.d("debug","aaaaaaaaaaa");
+                getImageSizeTask = null;
+                Log.d("debug","aaaaaaaaaaa");
+                //mMv.stopPlay();
+                Log.d("debug","aaaaaaaaaaa");
+                new LoadTask().execute();
             }
         });
 
@@ -195,7 +223,7 @@ public class TakePhotoActivity extends Activity {
                         getImageSizeTask.execute();
                     }
 
-
+                    new checkCameraImageList().execute();
 
                 } else {
                     layoutCameraArea.setVisibility(View.INVISIBLE);
@@ -232,6 +260,64 @@ public class TakePhotoActivity extends Activity {
         }
         connectionSwitch.setEnabled(mConnectionSwitchEnabled);
         return true;
+    }
+
+    private class checkCameraImageList extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... v){
+            Log.d("debug","*** Start checkCameraImageList ***");
+            HttpConnector camera = new HttpConnector(cameraIpAddress);
+            ArrayList<ImageInfo> imageInfoList = camera.getList();
+            Set<String> latestFileListInCamera = new HashSet<String>(0);
+
+            for (ImageInfo imageInfo : imageInfoList){
+                latestFileListInCamera.add(imageInfo.getFileId());
+            }
+            oldFileListInCamera = latestFileListInCamera;
+            Log.d("debug","*** End checkCameraImageList ***");
+            return null;
+        }
+    }
+
+
+    private class LoadTask extends AsyncTask<Void, Void, Void> {
+
+        boolean result;
+
+        @Override
+        protected Void doInBackground(Void... v){
+
+            HttpConnector camera = new HttpConnector(cameraIpAddress);
+            ArrayList<ImageInfo> imageInfoList = camera.getList();
+            Set<String> latestFileListInCamera = new HashSet<String>(0);
+
+            for (ImageInfo imageInfo : imageInfoList){
+                latestFileListInCamera.add(imageInfo.getFileId());
+            }
+            if( oldFileListInCamera.size() == latestFileListInCamera.size() ){
+                result = false;
+                Log.d("debug","camera内データに変化なし");
+                return null;
+            }else if(oldFileListInCamera.size() < latestFileListInCamera.size() ){
+                result = true;
+                Log.d("debug","camera内データに変化あり");
+            }
+
+            for (String fileid : latestFileListInCamera){
+                if ( !oldFileListInCamera.contains(fileid) ){
+                    new GetThumbnailTask(fileid).execute();
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v){
+
+        }
+
     }
 
 
@@ -340,7 +426,7 @@ public class TakePhotoActivity extends Activity {
 
         @Override
         protected void onPreExecute() {
-            //	logViewer.append("takePicture");
+
         }
 
         @Override
@@ -349,7 +435,6 @@ public class TakePhotoActivity extends Activity {
             CaptureListener postviewListener = new CaptureListener();
             HttpConnector camera = new HttpConnector(getResources().getString(R.string.theta_ip_address));
             HttpConnector.ShootResult result = camera.takePicture(postviewListener);
-
             return result;
         }
 
@@ -394,6 +479,7 @@ public class TakePhotoActivity extends Activity {
                         @Override
                         public void run() {
                             btnShoot.setEnabled(true);
+                            btnLoad.setEnabled(true);
                             textCameraStatus.setText(R.string.text_camera_standby);
                             new GetThumbnailTask(latestCapturedFileId).execute();
                         }
@@ -408,6 +494,7 @@ public class TakePhotoActivity extends Activity {
                     @Override
                     public void run() {
                         btnShoot.setEnabled(true);
+                        btnLoad.setEnabled(true);
                         textCameraStatus.setText(R.string.text_camera_standby);
                     }
                 });
@@ -419,6 +506,7 @@ public class TakePhotoActivity extends Activity {
     private class GetThumbnailTask extends AsyncTask<Void, String, Void> {
 
         private String fileId;
+        byte[] thumbnailImage;
 
         public GetThumbnailTask(String fileId) {
             this.fileId = fileId;
@@ -432,7 +520,7 @@ public class TakePhotoActivity extends Activity {
             if (thumbnail != null) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] thumbnailImage = baos.toByteArray();
+                thumbnailImage = baos.toByteArray();
 
                 //360画像の保存
                 ImageData imageData = camera.getImage(fileId, new HttpDownloadListener() {
@@ -443,6 +531,7 @@ public class TakePhotoActivity extends Activity {
                     public void onDataReceived(int size) {
                     }
                 });
+                camera = null;
 
                 // 360°画像の保存
                 MyFileAccess myFileAccess = new MyFileAccess(fileId);
@@ -457,12 +546,36 @@ public class TakePhotoActivity extends Activity {
                 // pitch,roll,yawの保存
                 myFileAccess.storeInfo(imageData.getPitch(),imageData.getRoll(),imageData.getYaw());
 
-                GLPhotoActivity.startActivityForResult(TakePhotoActivity.this, cameraIpAddress, fileId, thumbnailImage, true);
+
             } else {
                 publishProgress("failed to get file data.");
             }
             Log.d("debug","*** End GetThumbnailTask *** ");
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void values) {
+            if( IsTakePhotoByAndroid ) {
+                GLPhotoActivity.startActivityForResult(TakePhotoActivity.this, cameraIpAddress, fileId, thumbnailImage, true);
+            }
+            else{
+                Log.d("debug","restart");
+                //onDestroy();
+                reload();
+                Log.d("debug","restart");
+                GLPhotoActivity.startActivityForResult(TakePhotoActivity.this, cameraIpAddress, fileId, thumbnailImage, true);
+            }
+        }
+
+        private void reload() {
+            Intent intent = getIntent();
+            overridePendingTransition(0, 0);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            finish();
+
+            overridePendingTransition(0, 0);
+            startActivity(intent);
         }
 
         @Override

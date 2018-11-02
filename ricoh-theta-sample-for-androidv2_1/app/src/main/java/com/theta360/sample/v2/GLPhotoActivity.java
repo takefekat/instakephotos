@@ -51,6 +51,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
     public static final int REQUEST_REFRESH_LIST = 100;
     public static final int REQUEST_NOT_REFRESH_LIST = 101;
 
+    private ProgressBar progressBar_instakePhoto;
 
     /**
      * onCreate Method
@@ -58,9 +59,12 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
      */
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
-
+        Log.d("debug","*** Start GLPhotoActivity ***");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_glphoto);
+
+        progressBar_instakePhoto = (ProgressBar)findViewById(R.id.progressBar);
+        progressBar_instakePhoto.setVisibility(View.GONE);
 
     }
 
@@ -304,25 +308,25 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
 
     private class InstakePhotos extends AsyncTask<String, Integer, Void> {
 
-        private ProgressBar progressBar;
+
 
         InstakePhotos(){
-            progressBar = (ProgressBar)findViewById(R.id.progressBar);
+
         }
 
         @Override
         protected void onPreExecute() {
 
-            progressBar.setVisibility(View.VISIBLE);
+            progressBar_instakePhoto.setVisibility(View.VISIBLE);
 
-            progressBar.setMax(42); // 水平プログレスバーの最大値を設定
-            progressBar.setProgress(0); // 水平プログレスバーの値を設定
-            progressBar.setSecondaryProgress(60); // 水平プログレスバーのセカンダリ値を設定
+            progressBar_instakePhoto.setMax(42); // 水平プログレスバーの最大値を設定
+            progressBar_instakePhoto.setProgress(0); // 水平プログレスバーの値を設定
+            progressBar_instakePhoto.setSecondaryProgress(60); // 水平プログレスバーのセカンダリ値を設定
         }
 
         @Override
         protected void onProgressUpdate(Integer... value){
-            progressBar.setProgress(value[0]); // 水平プログレスバーの値を設定
+            progressBar_instakePhoto.setProgress(value[0]); // 水平プログレスバーの値を設定
         }
 
         @Override
@@ -550,7 +554,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
         @Override
         protected void onPostExecute(Void  v)  {
 
-            progressBar.setVisibility(View.GONE);
+            progressBar_instakePhoto.setVisibility(View.GONE);
 
             Toast toast = Toast.makeText(getApplicationContext(), "Complete instakePhotos", Toast.LENGTH_LONG);
             toast.show();
