@@ -10,8 +10,9 @@ import java.util.List;
 
 public class MyTensorFlow {
 
-    private int SELECT_MODE;
-    private Context CONTEXT_LOCAL;
+    private final int SELECT_MODE;
+    private final int SELECT_METHOD;
+    private final Context CONTEXT_LOCAL;
 
     // These are the settings for the original v1 Inception model. If you want to
     // use a model that's been produced from the TensorFlow for Poets codelab,
@@ -63,9 +64,10 @@ public class MyTensorFlow {
     ArrayList<Classifier.Recognition> results_dasahuman = new ArrayList<Classifier.Recognition>();
     ArrayList<Classifier.Recognition> results_other = new ArrayList<Classifier.Recognition>();
 
-    MyTensorFlow(int _selectMode, Context _context) {
+    MyTensorFlow(int _selectMode, int _selectMethod, Context _context) {
 
         SELECT_MODE = _selectMode;
+        SELECT_METHOD = _selectMethod;
         CONTEXT_LOCAL = _context;
 
         INPUT_SIZE = 299;
@@ -122,61 +124,125 @@ public class MyTensorFlow {
         List<Classifier.Recognition> results = classifier.recognizeImage(croppedBitmap, _image_num);
 
         if(SELECT_MODE == 0) {
-            int osyafood_n = -1;
-            int dasafood_n = -1;
-            int osyahuman_n = -1;
-            int dasahuman_n = -1;
-            for (int i = 0; i < results.size(); i++) {
-                if (results.get(i).getTitle().equals("osyafood")) {
-                    osyafood_n = i;
-                } else if (results.get(i).getTitle().equals("osyahuman")) {
-                    osyahuman_n = i;
-                } else if (results.get(i).getTitle().equals("dasafood")) {
-                    dasafood_n = i;
-                } else if (results.get(i).getTitle().equals("dasahuman")) {
-                    dasahuman_n = i;
-                }
-            }
 
-            for (int i = 0; i < results.size(); i++) {
-                if (results.get(i).getTitle().equals("osyafood")) {
-                    results_food_d.add(results.get(i));
-                } else if (results.get(i).getTitle().equals("osyahuman")) {
-                    results_human_d.add(results.get(i));
+            if(SELECT_METHOD == 0) {
+                int osyafood_n = -1;
+                int dasafood_n = -1;
+                int osyahuman_n = -1;
+                int dasahuman_n = -1;
+                for (int i = 0; i < results.size(); i++) {
+                    if (results.get(i).getTitle().equals("osyafood")) {
+                        osyafood_n = i;
+                    } else if (results.get(i).getTitle().equals("osyahuman")) {
+                        osyahuman_n = i;
+                    } else if (results.get(i).getTitle().equals("dasafood")) {
+                        dasafood_n = i;
+                    } else if (results.get(i).getTitle().equals("dasahuman")) {
+                        dasahuman_n = i;
+                    }
+                }
+
+                for (int i = 0; i < results.size(); i++) {
+                    if (results.get(i).getTitle().equals("osyafood")) {
+                        results_food_d.add(results.get(i));
+                    } else if (results.get(i).getTitle().equals("osyahuman")) {
+                        results_human_d.add(results.get(i));
+                    } else {
+                        Log.d("debug", "Unmatching labels");
+                        // debug用
+                        if (results.get(i).getTitle().equals("dasafood")) {
+                            results_dasafood.add(results.get(i));
+                        }
+                        if (results.get(i).getTitle().equals("dasahuman")) {
+                            results_dasahuman.add(results.get(i));
+                        }
+                        if (results.get(i).getTitle().equals("other")) {
+                            results_other.add(results.get(i));
+                        }
+                    }
+                }
+
+                //if (results.get(osyafood_n).getConfidence() > results.get(osyahuman_n).getConfidence()) {
+                    if (results.get(osyafood_n).getConfidence() > results.get(dasafood_n).getConfidence()) {
+                        results_food.add(new Classifier.Recognition(
+                                "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), results.get(osyafood_n).getConfidence()-results.get(dasafood_n).getConfidence(), null, results.get(osyafood_n).getImageId()));
+                    } else {
+                        results_food.add(new Classifier.Recognition(
+                                "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float) -1.0, null, results.get(osyafood_n).getImageId()));
+                    }
+                //    results_human.add(new Classifier.Recognition(
+                //            "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float) -1.0, null, results.get(osyahuman_n).getImageId()));
+                //} else {
+                    if (results.get(osyahuman_n).getConfidence() > results.get(dasahuman_n).getConfidence()) {
+                        results_human.add(new Classifier.Recognition(
+                                "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), results.get(osyahuman_n).getConfidence()-results.get(dasahuman_n).getConfidence(), null, results.get(osyahuman_n).getImageId()));
+                    } else {
+                        results_human.add(new Classifier.Recognition(
+                                "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float) -1.0, null, results.get(osyahuman_n).getImageId()));
+                    }
+                //    results_food.add(new Classifier.Recognition(
+                //            "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float) -1.0, null, results.get(osyafood_n).getImageId()));
+                //}
+                /*
+                if (results.get(osyafood_n).getConfidence() > results.get(osyahuman_n).getConfidence()) {
+                    if (results.get(osyafood_n).getConfidence() > results.get(dasafood_n).getConfidence()) {
+                        results_food.add(results.get(osyafood_n));
+                    } else {
+                        results_food.add(new Classifier.Recognition(
+                                "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float) -1.0, null, results.get(osyafood_n).getImageId()));
+                    }
+                    results_human.add(new Classifier.Recognition(
+                            "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float) -1.0, null, results.get(osyahuman_n).getImageId()));
                 } else {
-                    Log.d("debug", "Unmatching labels");
-                    // debug用
-                    if (results.get(i).getTitle().equals("dasafood")) {
-                        results_dasafood.add(results.get(i));
+                    if (results.get(osyahuman_n).getConfidence() > results.get(dasahuman_n).getConfidence()) {
+                        results_human.add(results.get(osyahuman_n));
+                    } else {
+                        results_human.add(new Classifier.Recognition(
+                                "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float) -1.0, null, results.get(osyahuman_n).getImageId()));
                     }
-                    if (results.get(i).getTitle().equals("dasahuman")) {
-                        results_dasahuman.add(results.get(i));
-                    }
-                    if (results.get(i).getTitle().equals("other")) {
-                        results_other.add(results.get(i));
-                    }
+                    results_food.add(new Classifier.Recognition(
+                            "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float) -1.0, null, results.get(osyafood_n).getImageId()));
                 }
-            }
-
-            if (results.get(osyafood_n).getConfidence() > results.get(osyahuman_n).getConfidence()) {
+                */
+                /*
                 if (results.get(osyafood_n).getConfidence() > results.get(dasafood_n).getConfidence()) {
                     results_food.add(results.get(osyafood_n));
                 } else {
                     results_food.add(new Classifier.Recognition(
                             "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float) -1.0, null, results.get(osyafood_n).getImageId()));
                 }
-                results_human.add(new Classifier.Recognition(
-                        "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float) -1.0, null, results.get(osyahuman_n).getImageId()));
-            } else {
                 if (results.get(osyahuman_n).getConfidence() > results.get(dasahuman_n).getConfidence()) {
                     results_human.add(results.get(osyahuman_n));
                 } else {
                     results_human.add(new Classifier.Recognition(
                             "" + results.get(osyahuman_n).getId(), results.get(osyahuman_n).getTitle(), (float) -1.0, null, results.get(osyahuman_n).getImageId()));
                 }
-                results_food.add(new Classifier.Recognition(
-                        "" + results.get(osyafood_n).getId(), results.get(osyafood_n).getTitle(), (float) -1.0, null, results.get(osyafood_n).getImageId()));
+                */
+            }else {
+
+                for (int i = 0; i < results.size(); i++) {
+                    if (results.get(i).getTitle().equals("osyafood")) {
+                        results_food.add(results.get(i));
+                        results_food_d.add(results.get(i));
+                    } else if (results.get(i).getTitle().equals("osyahuman")) {
+                        results_human.add(results.get(i));
+                        results_human_d.add(results.get(i));
+                    } else {
+                        Log.d("debug", "Unmatching labels");
+                        // debug用
+                        if (results.get(i).getTitle().equals("dasafood")) {
+                            results_dasafood.add(results.get(i));
+                        }
+                        if (results.get(i).getTitle().equals("dasahuman")) {
+                            results_dasahuman.add(results.get(i));
+                        }
+                        if (results.get(i).getTitle().equals("other")) {
+                            results_other.add(results.get(i));
+                        }
+                    }
+                }
             }
+
         }else {
 
             for (int i = 0; i < results.size(); i++) {

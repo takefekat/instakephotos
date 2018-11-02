@@ -390,7 +390,7 @@ public class ImageListActivity extends Activity {
             }
             //TODO モデル読み込みは事前の実施が可能(位置変更可)
             //モデル読み込み
-            MyTensorFlow myTensorFlow = new MyTensorFlow(selectMode.DEFINE_C, ImageListActivity.this);
+            MyTensorFlow myTensorFlow = new MyTensorFlow(selectMode.DEFINE_C, selectMode.DEFINE_M, ImageListActivity.this);
             myTensorFlow.modelCreate();
 
             //TODO ビットマップの数と合わせる

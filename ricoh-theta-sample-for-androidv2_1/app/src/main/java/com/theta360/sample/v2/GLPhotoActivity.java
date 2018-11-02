@@ -46,7 +46,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
     private Photo mTexture = null;
     private LoadPhotoTask mLoadPhotoTask = null;
 
-    private RotateInertia mRotateInertia = RotateInertia.INERTIA_0;
+    private RotateInertia mRotateInertia = RotateInertia.INERTIA_50;
 
     public static final int REQUEST_REFRESH_LIST = 100;
     public static final int REQUEST_NOT_REFRESH_LIST = 101;
@@ -357,7 +357,7 @@ public class GLPhotoActivity extends Activity implements ConfigurationDialog.Dia
             }
             //TODO モデル読み込みは事前の実施が可能(位置変更可)
             //モデル読み込み
-            MyTensorFlow myTensorFlow = new MyTensorFlow(selectMode.DEFINE_C,GLPhotoActivity.this);
+            MyTensorFlow myTensorFlow = new MyTensorFlow(selectMode.DEFINE_C, selectMode.DEFINE_M, GLPhotoActivity.this);
             myTensorFlow.modelCreate();
 
             //TODO ビットマップの数と合わせる
