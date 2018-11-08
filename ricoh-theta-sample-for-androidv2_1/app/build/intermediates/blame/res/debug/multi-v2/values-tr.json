@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/fumito/Desktop/instakePhoto 2/ricoh-theta-sample-for-androidv2_1/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-tr/values-tr.xml",
+            "outputFile": "C:\\Users\\junki\\muran\\instakephotos\\ricoh-theta-sample-for-androidv2_1\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-tr\\values-tr.xml",
             "map": [
                 {
-                    "source": "/Users/fumito/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/805faedd7b2790471db0fb0a0ac539e2/res/values-tr/values-tr.xml",
+                    "source": "C:\\Users\\junki\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-24.2.1.aar\\7273e95b4aa45147144142ba8a9561cc\\res\\values-tr\\values-tr.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",

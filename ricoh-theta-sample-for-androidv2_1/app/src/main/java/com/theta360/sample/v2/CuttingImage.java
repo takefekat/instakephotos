@@ -62,7 +62,7 @@ public class CuttingImage {
         //int testtest =0;
 
 
-        for(beta=-Math.PI/2*3/4; beta < Math.PI/2*3/4 ;beta = beta + beta_bu) {
+        for(beta=-Math.PI/2* 0 / 4; beta < Math.PI/2*1/4 ;beta = beta + beta_bu) {
 
             if (beta == -Math.PI / 2 * 2 / 4 || beta == Math.PI / 2 * 2 / 4) {
                 alpha_bu = 2.0 * Math.PI / 6.0;
@@ -267,7 +267,7 @@ public class CuttingImage {
         //int testtest =0;
 
 
-        for(beta=-Math.PI/2*3/4; beta < Math.PI/2*3/4 ;beta = beta + beta_bu) {
+        for(beta=-Math.PI/2*0/4; beta < Math.PI/2*1/4 ;beta = beta + beta_bu) {
 
             if (beta == -Math.PI / 2 * 2 / 4 || beta == Math.PI / 2 * 2 / 4) {
                 alpha_bu = 2.0 * Math.PI / 6.0;
